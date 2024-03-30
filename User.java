@@ -34,4 +34,11 @@ package PACKAGE_NAME;public class User {
     public void setPassword() {
         this.password = password;
     }
+   public boolean equals(Object o) {
+        if (!(o instanceof User)) {
+            return false;
+        }
+        User check = (User) o;
+        return this.id == check.id;
+    }
 }
