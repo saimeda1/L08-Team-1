@@ -1,12 +1,18 @@
-package PACKAGE_NAME;public class User {
+package PACKAGE_NAME;
+
+import java.util.ArrayList;
+import java.util.List;
+public class User {
     private int id; //internal number of user
     private String username;
     private String password;
+    private List<Post> posts;
 
     public User(int id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.posts = new ArrayList<>();
     }
 
     public User() {
@@ -34,7 +40,18 @@ package PACKAGE_NAME;public class User {
     public void setPassword() {
         this.password = password;
     }
-   public boolean equals(Object o) {
+
+    // Method to add a post
+    public void addPost(String content) {
+        this.posts.add(new Post(this.id, content));
+    }
+
+    // Method to get the user's posts
+    public List<Post> getPosts() {
+        return this.posts;
+    }
+
+    public boolean equals(Object o) {
         if (!(o instanceof User)) {
             return false;
         }
