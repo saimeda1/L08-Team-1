@@ -1,6 +1,10 @@
 import java.time.LocalDateTime;
-
-public class Comment {
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.1
+ * This is for group project phase 1
+ */
+public class Comment implements ICommentable {
     private static int nextId = 1;
     private int id;
     private User author;
@@ -32,9 +36,23 @@ public class Comment {
     public void upVote() {
         likes++;
     }
-
     public void downVote() {
         dislikes++;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Comment(String content, User author) {
