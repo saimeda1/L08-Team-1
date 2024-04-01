@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 
 public class UserDatabase {
-    private ArrayList<User> users;
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Post> posts = new ArrayList<>();
 
     public UserDatabase(ArrayList<User> users) {
         this.users = users;
@@ -16,6 +17,32 @@ public class UserDatabase {
         users.add(user);
         return true;
     }
+
+    public ArrayList<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts() {
+        for (User u : users) {
+            for (Post p : u.getPosts()) {
+                posts.add(p);
+            }
+        }
+    }
+
+    public boolean addComment(Comment comment, Post post) {
+        setPosts();
+        for (int i = 0; i < posts.size(); i++) {
+            if (post.equals(posts.get(i))) {
+                ArrayList<Comment> c = posts.get(i).getComments();
+                c.add(comment);
+                posts.get(i).setComments(c);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean logIn(User user) {
         for (User u : users) {
             if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())) {
@@ -25,9 +52,9 @@ public class UserDatabase {
         return false;
     }
 
-    public User searchUser(String search){
-        for (int i = 0; i < users.size(); i++){
-            if (users.get(i).getUsername().equals(search)){
+    public User searchUser(String search) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equals(search)) {
                 return users.get(i);
             }
         }
