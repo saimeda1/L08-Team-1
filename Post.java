@@ -1,7 +1,11 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
-public class Post {
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.1
+ * This is for group project phase 1
+ */
+public class Post implements IPost {
     private static int nextId = 1;
     private int id;
     private String content;
