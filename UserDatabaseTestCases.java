@@ -4,66 +4,79 @@ import java.util.ArrayList;
  * @version Apr.1
  * This is for group project phase 1
  */
-public class UserDatabase {
-    private ArrayList<User> users = new ArrayList<>();
-    private ArrayList<Post> posts = new ArrayList<>();
+import org.junit.Before;
+import org.junit.Test;
+import java.util.ArrayList;
+import static org.junit.Assert.*;
 
-    public UserDatabase(ArrayList<User> users) {
-        this.users = users;
+public class UserDatabaseTestCases {
+
+    private UserDatabase userDatabase;
+    private User user1;
+    private User user2;
+    private Post post1;
+    private Comment comment1;
+
+    @Before
+    public void setUp() {
+        // Initialize users
+        user1 = new User("user1", "password1");
+        user2 = new User("user2", "password2");
+
+        // Initialize post and comment
+        post1 = new Post("Test post by user1", user1, false);
+        comment1 = new Comment("Test comment by user2", user2);
+
+        // Add users to a list
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user1);
+
+        // Initialize UserDatabase with a list of users
+        userDatabase = new UserDatabase(users);
     }
 
-    public boolean signUp(User user) {
-        for (User u : users) {
-            if (u.equals(user)) {
-                return false;
-            }
-        }
-        users.add(user);
-        return true;
+    @Test
+    public void testSignUpExistingUser() {
+        assertFalse("SignUp should fail for an existing user", userDatabase.signUp(user1));
     }
 
-    public ArrayList<Post> getPosts() {
-        return posts;
+    @Test
+    public void testSignUpNewUser() {
+        assertTrue("SignUp should succeed for a new user", userDatabase.signUp(user2));
     }
 
-    public void setPosts() {
-        for (User u : users) {
-            for (Post p : u.getPosts()) {
-                posts.add(p);
-            }
-        }
+    @Test
+    public void testLogInSuccess() {
+        assertTrue("Login should succeed for correct username and password", userDatabase.logIn(new User("user1", "password1")));
     }
 
-    public boolean addComment(Comment comment, Post post) {
-        setPosts();
-        for (int i = 0; i < posts.size(); i++) {
-            if (post.equals(posts.get(i))) {
-                ArrayList<Comment> c = posts.get(i).getComments();
-                c.add(comment);
-                posts.get(i).setComments(c);
-                return true;
-            }
-        }
-        return false;
+    @Test
+    public void testLogInFailure() {
+        assertFalse("Login should fail for incorrect password", userDatabase.logIn(new User("user1", "wrongPassword")));
     }
 
-    public boolean logIn(User user) {
-        for (User u : users) {
-            if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())) {
-                return true;
-            }
-        }
-        return false;
+    @Test
+    public void testAddCommentToPost() {
+        userDatabase.signUp(user2);
+        user1.addPost(post1);
+        userDatabase.setPosts();
+        assertTrue("Adding a comment to a post should succeed", userDatabase.addComment(comment1, post1));
+        assertEquals("Post should have 1 comment after addition", 1, post1.getComments().size());
     }
 
-    public User searchUser(String search) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(search)) {
-                return users.get(i);
-            }
-        }
-        return null;
+    @Test
+    public void testSearchUserFound() {
+        User foundUser = userDatabase.searchUser("user1");
+        assertNotNull("Search should find the user", foundUser);
+        assertEquals("Found user should have the username 'user1'", "user1", foundUser.getUsername());
     }
 
+    @Test
+    public void testSearchUserNotFound() {
+        User foundUser = userDatabase.searchUser("nonexistentUser");
+        assertNull("Search should not find the user", foundUser);
+    }
 
+    // Add more tests as necessary for full coverage.
 }
+
