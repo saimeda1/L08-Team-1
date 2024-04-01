@@ -1,6 +1,10 @@
 import java.util.ArrayList;
-
-public class User {
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.1
+ * This is for group project phase 1
+ */
+public class User implements IUser {
     private String username;
     private String password;
     private ArrayList<Friend> friends = new ArrayList<>();
@@ -21,7 +25,7 @@ public class User {
         return password;
     }
 
-    public void setPassword() {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -141,7 +145,7 @@ public class User {
         posts.add(post);
     }
 
-    public void displayFriendPost() {
+    public void displayFriendPosts() {
         for (Friend f : friends) {
             for (Post p : f.getFriendPost()) {
                 System.out.println(p.toString());
