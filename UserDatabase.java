@@ -1,37 +1,38 @@
 import java.util.ArrayList;
 
 public class UserDatabase {
-    private User[] users;
+    private ArrayList<User> users;
 
-    public UserDatabase(User[] users) {
+    public UserDatabase(ArrayList<User> users) {
         this.users = users;
     }
 
-    public boolean addUser(User user) {
-        ArrayList<User> userList = new ArrayList<>();
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].equals(user)) {
+    public boolean signUp(User user) {
+        for (User u : users) {
+            if (u.equals(user)) {
                 return false;
             }
-            userList.add(users[i]);
         }
-        userList.add(user);
-        this.users = userList.toArray(new User[0]);
+        users.add(user);
         return true;
     }
-
-    public boolean deleteUser(User user) {
-        ArrayList<User> userList = new ArrayList<>();
-        boolean check = true;
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].equals(user)) {
-                check = false;
-                continue;
+    public boolean logIn(User user) {
+        for (User u : users) {
+            if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())) {
+                return true;
             }
-            userList.add(users[i]);
         }
-        userList.add(user);
-        this.users = userList.toArray(new User[0]);
-        return check;
+        return false;
     }
+
+    public User searchUser(String search){
+        for (int i = 0; i < users.size(); i++){
+            if (users.get(i).getUsername().equals(search)){
+                return users.get(i);
+            }
+        }
+        return null;
+    }
+
+
 }
