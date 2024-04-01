@@ -22,23 +22,20 @@ public class Friend extends User {
         return friendPost;
     }
 
-    public boolean upVotePost(int id) {
-        for (int i = 0; i < super.getPosts().size(); i++) {
-            if (super.getPosts().get(i).getId() == id) {
-                super.getPosts().get(i).setLikes(super.getPosts().get(i).getLikes() + 1);
-                return true;
-            }
+    public boolean upVotePost(Post post) {
+        if (post == null) {
+            return false;
         }
-        return false;
+        post.upVote();
+        return true;
     }
-    public boolean downVotePost(int id){
-        for (int i = 0; i < super.getPosts().size(); i++) {
-            if (super.getPosts().get(i).getId() == id) {
-                super.getPosts().get(i).setDislikes(super.getPosts().get(i).getDislikes() + 1);
-                return true;
-            }
+
+    public boolean downVotePost(Post post) {
+        if (post == null) {
+            return false;
         }
-        return false;
+        post.downVote();
+        return true;
     }
 
     @Override
