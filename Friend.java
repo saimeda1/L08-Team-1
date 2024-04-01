@@ -1,6 +1,10 @@
 import java.util.ArrayList;
-
-public class Friend extends User {
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.1
+ * This is for group project phrase 1
+ */
+public class Friend extends User implements IFriend {
 
     private boolean block;
     ArrayList<Post> friendPost = new ArrayList<>();
