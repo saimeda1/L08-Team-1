@@ -1,10 +1,11 @@
 import java.time.LocalDateTime;
 
 public class Comment {
+    private static int nextId = 1;
+    private int id;
     private User author;
     private String content;
     private LocalDateTime time;
-    private int id = 0;
     private int likes;
     private int dislikes;
 
@@ -28,21 +29,29 @@ public class Comment {
         this.dislikes = dislikes;
     }
 
-    public Comment(User author, String content) {
+    public void upVote() {
+        likes++;
+    }
+
+    public void downVote() {
+        dislikes++;
+    }
+
+    public Comment(String content, User author) {
         this.author = author;
         this.content = content;
         this.time = LocalDateTime.now();
         this.likes = 0;
         this.dislikes = 0;
-        id++;
+        this.id = nextId++;
     }
 
     public String toString() {
-        return
-                "Comment: " + id + ":\n" + content + "\n" +
-                        "by " + author.getUsername() + "\n" +
-                        "at " + time + "\n" +
-                        "likes: " + likes + "\n" +
-                        "dislikes: " + dislikes + "\n";
+        return "-------------------------------\n" +
+                "Comment: " + id + "\n" + content + "\n" +
+                "by " + author.getUsername() + "\n" +
+                "at " + time + "\n" +
+                "likes: " + likes + "\n" +
+                "dislikes: " + dislikes + "\n";
     }
 }
