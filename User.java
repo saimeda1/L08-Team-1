@@ -46,11 +46,11 @@ public class User {
             return false;
         }
         User check = (User) o;
-        return this.username == check.username;
+        return this.username.equals(check.username);
     }
 
     public String toString() {
-        String result =  "Username:" + username + "\n" +
+        String result = "Username:" + username + "\n" +
                 "Friends: ";
         if (friends.size() == 0) {
             result += "No friends";
@@ -66,8 +66,9 @@ public class User {
         }
         return result;
     }
+
     public boolean addFriend(User user) {
-        Friend friend = new Friend(user.getUsername(),user.getPassword(),false);
+        Friend friend = new Friend(user.getUsername(), user.getPassword(), false);
         if (friends != null) {
             for (int i = 0; i < friends.size(); i++) {
                 if (friends.get(i).equals(friend)) {
@@ -100,7 +101,7 @@ public class User {
         return false;
     }
 
-    public boolean deletePost(int id){
+    public boolean deletePost(int id) {
         for (int i = 0; i < posts.size(); i++) {
             if (posts.get(i).getId() == id) {
                 posts.remove(i);
@@ -109,7 +110,8 @@ public class User {
         }
         return false;
     }
-    public boolean deleteComment(int id){
+
+    public boolean deleteComment(int id) {
         for (int i = 0; i < comments.size(); i++) {
             if (comments.get(i).getId() == id) {
                 comments.remove(i);
@@ -118,23 +120,21 @@ public class User {
         }
         return false;
     }
-    public boolean upVoteComment(int id) {
-        for (int i = 0; i < comments.size(); i++) {
-            if (comments.get(i).getId() == id) {
-                comments.get(i).setLikes(comments.get(i).getLikes() + 1);
-                return true;
-            }
+
+    public boolean upVoteComment(Comment comment) {
+        if (comment == null) {
+            return false;
         }
-        return false;
+        comment.upVote();
+        return true;
     }
-    public boolean downVoteComment(int id){
-        for (int i = 0; i < comments.size(); i++) {
-            if (comments.get(i).getId() == id) {
-                comments.get(i).setDislikes(comments.get(i).getDislikes() + 1);
-                return true;
-            }
+
+    public boolean downVoteComment(Comment comment) {
+        if (comment == null) {
+            return false;
         }
-        return false;
+        comment.downVote();
+        return true;
     }
 
     public void addPost(Post post) {
@@ -147,6 +147,10 @@ public class User {
                 System.out.println(p.toString());
             }
         }
+    }
+
+    public void addComment(Post post, Comment comment) {
+
     }
 
 
