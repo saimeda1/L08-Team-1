@@ -8,11 +8,6 @@ Clone the repository to your local machine.
 Compile the project using your preferred Java compiler.
 Run the compiled program to execute the social media platform.
 
-## Submitted Parts
-Student 1: Submitted User, Friend, Comment, Post, and UserDatabase classes on Brightspace.
-Student 2: Submitted Friendships class and UserDatabaseTest class on Vocareum.
-Detailed Description of Each Class
-
 ## Comment Class
 Represents comments made on posts.
 Attributes: Author, Content, Time, Likes, Dislikes.
