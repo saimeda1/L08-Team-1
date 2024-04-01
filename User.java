@@ -1,33 +1,17 @@
-package PACKAGE_NAME;
-
 import java.util.ArrayList;
-import java.util.List;
+
 public class User {
-    private int id; //internal number of user
     private String username;
     private String password;
-    private List<Post> posts;
+    private ArrayList<Friend> friends = new ArrayList<>();
+    private ArrayList<Post> posts = new ArrayList<>();
+    private ArrayList<Comment> comments = new ArrayList<>();
 
-    public User(int id, String username, String password) {
-        this.id = id;
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.posts = new ArrayList<>();
     }
 
-    public User() {
-        this.id = 0;
-        this.username = null;
-        this.password = null;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -41,14 +25,20 @@ public class User {
         this.password = password;
     }
 
-    // Method to add a post
-    public void addPost(String content) {
-        this.posts.add(new Post(this.id, content));
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    // Method to get the user's posts
-    public List<Post> getPosts() {
-        return this.posts;
+    public ArrayList<Post> getPosts() {
+        return posts;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public ArrayList<Friend> getFriends() {
+        return friends;
     }
 
     public boolean equals(Object o) {
@@ -56,6 +46,108 @@ public class User {
             return false;
         }
         User check = (User) o;
-        return this.id == check.id;
+        return this.username == check.username;
     }
+
+    public String toString() {
+        String result =  "Username:" + username + "\n" +
+                "Friends: ";
+        if (friends.size() == 0) {
+            result += "No friends";
+        } else {
+            for (int i = 0; i < friends.size(); i++) {
+                if (i < friends.size() - 1) {
+                    result += friends.get(i).getUsername();
+                    result += ",";
+                } else {
+                    result += friends.get(i).getUsername();
+                }
+            }
+        }
+        return result;
+    }
+    public boolean addFriend(User user) {
+        Friend friend = new Friend(user.getUsername(),user.getPassword(),false);
+        if (friends != null) {
+            for (int i = 0; i < friends.size(); i++) {
+                if (friends.get(i).equals(friend)) {
+                    return false;
+                }
+            }
+        }
+        friends.add(friend);
+        return true;
+    }
+
+    public boolean removeFriend(User user) {
+        for (int i = 0; i < friends.size(); i++) {
+            if (friends.get(i).equals(user)) {
+                friends.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public boolean blockFriends(Friend user) {
+        for (int i = 0; i < friends.size(); i++) {
+            if (friends.get(i).equals(user)) {
+                friends.get(i).setBlock(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deletePost(int id){
+        for (int i = 0; i < posts.size(); i++) {
+            if (posts.get(i).getId() == id) {
+                posts.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean deleteComment(int id){
+        for (int i = 0; i < comments.size(); i++) {
+            if (comments.get(i).getId() == id) {
+                comments.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean upVoteComment(int id) {
+        for (int i = 0; i < comments.size(); i++) {
+            if (comments.get(i).getId() == id) {
+                comments.get(i).setLikes(comments.get(i).getLikes() + 1);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean downVoteComment(int id){
+        for (int i = 0; i < comments.size(); i++) {
+            if (comments.get(i).getId() == id) {
+                comments.get(i).setDislikes(comments.get(i).getDislikes() + 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
+    }
+
+    public void displayFriendPost() {
+        for (Friend f : friends) {
+            for (Post p : f.getFriendPost()) {
+                System.out.println(p.toString());
+            }
+        }
+    }
+
+
 }
