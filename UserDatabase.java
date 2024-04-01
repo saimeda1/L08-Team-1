@@ -1,5 +1,9 @@
 import java.util.ArrayList;
-
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.1
+ * This is for group project phase 1
+ */
 public class UserDatabase {
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Post> posts = new ArrayList<>();
