@@ -1,7 +1,7 @@
 # Phase 1 README
 
 
-##Running Instructions
+## Running Instructions
 Open a terminal or command prompt, navigate to the project folder, and compile the Java files. The general command to compile all Java files in the directory is:
 
 javac *.java
