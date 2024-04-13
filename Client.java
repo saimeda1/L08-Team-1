@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
+public class Client implements IClient{
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -44,14 +44,14 @@ public class Client {
         }
     }
 
-    private void processCommand(String command) throws IOException {
+    public void processCommand(String command) throws IOException {
         out.writeObject(command);
         switch (command.toLowerCase()) {
             case "login":
                 handleLogin();
                 break;
             case "register":
-                handleRegister();
+
                 break;
             case "addcomment":
                 handleAddComment();
@@ -59,7 +59,7 @@ public class Client {
         }
     }
 
-    private void handleLogin() throws IOException {
+    public void handleLogin() throws IOException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
@@ -74,7 +74,7 @@ public class Client {
         }
     }
 
-    private void handleRegister() throws IOException {
+    public void handleRegister() throws IOException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
@@ -89,7 +89,7 @@ public class Client {
         }
     }
 
-    private void handleAddComment() throws IOException {
+    public void handleAddComment() throws IOException {
         System.out.println("Enter post ID to comment on:");
         int postId = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter your comment:");

@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
-public class Server {
+public class Server implements IServer {
     private ServerSocket serverSocket;
     private UserDatabase userDatabase;
 
@@ -14,7 +14,7 @@ public class Server {
         loadUsers();  // Method to load users from a file or initialize database
     }
 
-    private void loadUsers() {
+    public void loadUsers() {
         File file = new File("user_data.dat");
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
