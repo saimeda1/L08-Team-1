@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
  * This is for group project phrase 1
  */
-public class Friend extends User implements IFriend {
-
+public class Friend extends User implements IFriend, Serializable {
+    private static final long serialVersionUID = 1L;
     private boolean block;
     ArrayList<Post> friendPost = new ArrayList<>();
 

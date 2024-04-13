@@ -1,11 +1,13 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
  * This is for group project phase 1
  */
-public class Post implements IPost {
+public class Post implements IPost, Serializable {
+    private static final long serialVersionUID = 1L;
     private static int nextId = 1;
     private int id;
     private String content;

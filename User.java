@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
  * This is for group project phase 1
  */
 public class User implements IUser {
+    private static final long serialVersionUID = 1L; // Recommended for serialization
     private String username;
     private String password;
     private ArrayList<Friend> friends = new ArrayList<>();

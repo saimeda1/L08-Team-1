@@ -1,17 +1,13 @@
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
+import java.io.Serializable;
 
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
  * This is for group project phase 1
  */
-public class UserDatabase {
+public class UserDatabase implements Serializable {
+    private static final long serialVersionUID = 1L;
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Post> posts = new ArrayList<>();
 

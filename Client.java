@@ -8,7 +8,6 @@ public class Client implements Iclient {
     private ObjectOutputStream output;
     private ObjectInputStream input;
 
-    @Override
     public void connect(String address, int port) {
         try {
             socket = new Socket(address, port);
@@ -20,7 +19,6 @@ public class Client implements Iclient {
         }
     }
 
-    @Override
     public void send(Object data) {
         try {
             output.writeObject(data);
@@ -29,7 +27,6 @@ public class Client implements Iclient {
         }
     }
 
-    @Override
     public Object receive() {
         try {
             return input.readObject();
@@ -39,7 +36,6 @@ public class Client implements Iclient {
         }
     }
 
-    @Override
     public void disconnect() {
         try {
             input.close();

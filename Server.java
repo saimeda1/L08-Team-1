@@ -17,12 +17,11 @@ public class Server implements Iserver, Runnable {
         }
     }
 
-    @Override
+
     public void run() {
         startServer();
     }
 
-    @Override
     public void startServer() {
         isRunning = true;
         try {
@@ -34,7 +33,6 @@ public class Server implements Iserver, Runnable {
         }
     }
 
-    @Override
     public void stopServer() {
         isRunning = false;
         pool.shutdown();
