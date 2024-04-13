@@ -5,7 +5,7 @@ import java.io.Serializable;
  * @version Apr.1
  * This is for group project phase 1
  */
-public class User implements IUser {
+public class User implements IUser, Serializable{
     private static final long serialVersionUID = 1L; // Recommended for serialization
     private String username;
     private String password;

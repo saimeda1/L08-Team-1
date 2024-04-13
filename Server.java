@@ -1,50 +1,54 @@
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.net.Socket;
+import java.util.ArrayList;
 
-public class Server implements Iserver, Runnable {
+
+public class Server {
     private ServerSocket serverSocket;
-    private ExecutorService pool;
-    private boolean isRunning = false;
+    private UserDatabase userDatabase;
 
-    public Server(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
-            pool = Executors.newFixedThreadPool(10);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public Server(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        userDatabase = new UserDatabase(new ArrayList<>()); // Assuming your UserDatabase has a constructor that takes a list of Users
+        loadUsers();  // Method to load users from a file or initialize database
+    }
+
+    private void loadUsers() {
+        File file = new File("user_data.dat");
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                User user;
+                while ((user = (User) ois.readObject()) != null) {
+                    userDatabase.signUp(user);
+                }
+            } catch (EOFException ignored) {
+                // End of file reached
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-
-    public void run() {
-        startServer();
-    }
-
-    public void startServer() {
-        isRunning = true;
+    public void start() {
+        System.out.println("Server started, waiting for connections...");
         try {
-            while (isRunning) {
-                pool.execute(new ClientHandler(serverSocket.accept()));
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                new ClientHandler(clientSocket, userDatabase).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void stopServer() {
-        isRunning = false;
-        pool.shutdown();
+    public static void main(String[] args) {
         try {
-            serverSocket.close();
+            Server server = new Server(1112);
+            server.start();
         } catch (IOException e) {
+            System.err.println("Error starting server: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        Server server = new Server(8000);
-        new Thread(server).start();
     }
 }

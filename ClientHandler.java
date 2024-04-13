@@ -1,72 +1,88 @@
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler extends Thread {
     private Socket clientSocket;
-    private ObjectInputStream input;
-    private ObjectOutputStream output;
-    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
+    private UserDatabase userDatabase;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
 
-    public ClientHandler(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-        try {
-            output = new ObjectOutputStream(clientSocket.getOutputStream());
-            input = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error setting up streams", e);
-        }
+    public ClientHandler(Socket socket, UserDatabase userDatabase) {
+        this.clientSocket = socket;
+        this.userDatabase = userDatabase;
     }
 
     @Override
     public void run() {
         try {
-            Object request;
-            while (!clientSocket.isClosed() && (request = input.readObject()) != null) {
-                // Interpret the request based on your protocol
-                if (request instanceof String) {
-                    String command = (String) request;
-                    processCommand(command);
-                } else {
-                    LOGGER.log(Level.WARNING, "Received unknown request type");
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+            Object inputObject;
+
+            while ((inputObject = in.readObject()) != null) {
+                if (inputObject instanceof String) {
+                    processCommand((String) inputObject);
                 }
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error during communication", e);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error handling client: " + e.getMessage());
         } finally {
-            cleanUp();
+            try {
+                if (out != null) out.close();
+                if (in != null) in.close();
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void processCommand(String command) {
-        // Add command handling logic here
+    private void processCommand(String command) throws IOException {
         switch (command.toLowerCase()) {
-            case "hello":
-                sendResponse("Hello from server!");
+            case "login":
+                handleLogin();
                 break;
-            // More commands here
-            default:
-                LOGGER.log(Level.WARNING, "Unknown command received: {0}", command);
+            case "register":
+                handleRegister();
+                break;
+            case "addcomment":
+                handleAddComment();
+                break;
+            // Additional cases for other functionalities like searching users, etc.
         }
     }
 
-    private void sendResponse(Object response) {
+    private void handleLogin() throws IOException {
         try {
-            output.writeObject(response);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error sending response", e);
+            User user = (User) in.readObject();
+            boolean isLoggedIn = userDatabase.logIn(user);
+            out.writeBoolean(isLoggedIn);
+            out.flush();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
-    private void cleanUp() {
+    private void handleRegister() throws IOException {
         try {
-            if (input != null) input.close();
-            if (output != null) output.close();
-            if (clientSocket != null) clientSocket.close();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error cleaning up resources", e);
+            User user = (User) in.readObject();
+            boolean isRegistered = userDatabase.signUp(user);
+            out.writeBoolean(isRegistered);
+            out.flush();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleAddComment() throws IOException {
+        try {
+            Comment comment = (Comment) in.readObject();
+            Post post = (Post) in.readObject();
+            boolean isCommentAdded = userDatabase.addComment(comment, post);
+            out.writeBoolean(isCommentAdded);
+            out.flush();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
