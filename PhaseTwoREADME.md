@@ -120,3 +120,53 @@ The `Server` class listens for incoming client connections on a specific port. I
 - **Implementation:** Instatiates a `Server` object with the specified port (1112 by default) and starts the server by invoking the `start()` method.
 
 
+# ClientHandler Class
+
+This `ClientHandler` implements a thread for handling client communication on the server side in a client-server architecture. It receives requests from clients, processes them, and sends back appropriate responses.
+
+## Constructors
+
+### ClientHandler(Socket socket, UserDatabase userDatabase)
+
+- **Parameters:**
+    -`socket`: The socket representing the client connection
+    -`userDatabase`: The database containing user information
+
+## Fields
+
+- `private Socket clientSocket`: Represents the socket for communicating with the client.
+- `private UserDatabase userDatabase`: Represents the database containing user information
+- `private ObjectInputStream in`:  Input stream for reading objects from the client.
+- `private ObjectOutputStream out`: Output stream for sending objects to the client.
+
+## Methods
+
+### run()
+
+- **Description:** Overrides the run() method of the Thread class. Handles client requests in a loop until the client closes the connection.
+- **Implementation:** Initializes input and output streams, reads objects from the client, and processes them using the processCommand() method.
+
+### processCommand(String command)
+
+- **Description:** Processes the command received from the client and delegates it to the appropriate method.
+- **Parameters:** 
+    - `command`: The command received from the client.
+
+### handleLogin()
+
+- **Description:** Handles the login request received from the client.
+- **Implementation:** Reads a User object from the client, attempts to log in the user using the userDatabase, and sends back the login result to the client.
+
+### handleRegister()
+
+- **Description:** Handles the registraiton request received from the client.
+- **Implementation:** Reads a User object from the client, attempts to register the user using the userDatabase, and sends back the registration result to the client.
+
+### handleAddComment()
+
+- **Description:** Handles the request to add a comment received from the client.
+- **Implementation:** Reads a Comment object and a Post object from the client, attempts to add the comment to the post using the userDatabase, and sends back the result to the client.
+
+## Additional Functionality
+
+The ClientHandler class can be extended to handle additional functionalities such as searching for users, updating user profiles, posting new content, etc. These functionalities can be implemented by adding more handle methods and corresponding command cases in the processCommand() method.
