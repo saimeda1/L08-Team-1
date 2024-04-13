@@ -1,5 +1,19 @@
 # Phase 1 README
 
+
+## Running Instructions
+Open a terminal or command prompt, navigate to the project folder, and compile the Java files. The general command to compile all Java files in the directory is:
+
+javac *.java
+
+This will compile all .java files in the directory, resolving dependencies among them, and generate .class files for each.
+
+Running Test Cases: To run the test cases, you would use the Java command followed by the name of the test case class (without the .java extension). For example, to run UserTestCases, you would use:
+
+java UserTestCases
+
+A main method will be implemented alongside a GUI in future phases for easier usability. 
+
 ## Project Overview
 This phase of the Social Media Platform project focuses on implementing user profiles, friendships, and user database functionalities. Below is a detailed description of each class along with instructions on how to compile and run the project.
 
