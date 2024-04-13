@@ -88,3 +88,35 @@ The `Client` class manages the user interface for client-side operations. It con
 - `java.io.*`: Provides input/output functionality.
 - `java.net.Socket`: Represents a socket for network communication.
 - `java.util.Scanner`: Allows reading user input from the console.
+
+# Server Class
+
+The `Server` class listens for incoming client connections on a specific port. It also creates a ClientHandler for each connection to handle client requests. It interfaces with UserDatase to retrieve or update user data as requested by clients. It also manages server resources and ensures clean shutdown on server stop.
+
+## Constructors
+
+### Server(int port)
+
+- **Parameters:**
+    - `port`: The port on which the server will listen for incoming connections.
+
+## Methods
+
+### loadUsers()
+
+- **Description:** Loads user data from a file (if available) or initializes the user database.
+- **Implementation:** Reads user objects from a file named "user_data.dat" using ObjectInputStream and adds them to the user database.
+
+### start()
+
+- **Description:**  Starts the server, waiting for incoming client connections.
+- **Implementation:** Enters a continuous loop where the server socket accepts incoming client connections. For each connection, it creates a new instance of ClientHandler to handle client communication.
+
+## Main Method
+
+### main(String[] args)
+
+- **Description:** Entry point of the server application.
+- **Implementation:** Instatiates a `Server` object with the specified port (1112 by default) and starts the server by invoking the `start()` method.
+
+
