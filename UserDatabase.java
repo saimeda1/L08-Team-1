@@ -24,6 +24,19 @@ public class UserDatabase implements Serializable {
         users.add(user);
         return true;
     }
+    public boolean deleteUser(User user) {
+        ArrayList<User> userList = new ArrayList<>();
+        boolean check = false;
+        for (int i = 0; i < users.length; i++) {
+            if (users[i].equals(user)) {
+                check = true;
+                continue;
+            }
+            userList.add(users[i]);
+        }
+        this.users = userList;
+        return check;
+    }
 
     public ArrayList<Post> getPosts() {
         return posts;
