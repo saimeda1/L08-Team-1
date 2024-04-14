@@ -17,11 +17,16 @@ public class UserDatabase implements Serializable {
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Post> posts = new ArrayList<>();
 
+    public UserDatabase() {
+        this.users = new ArrayList<>();
+        this.posts = new ArrayList<>();
+    }
+
     public UserDatabase(ArrayList<User> users) {
         this.users = users;
     }
 
-    public boolean signUp(User newUser) {
+    public synchronized boolean signUp(User newUser) {
         for (User user : users) {
             if (user.getUsername().equals(newUser.getUsername())) {
                 return false;
@@ -31,17 +36,17 @@ public class UserDatabase implements Serializable {
         return true;
     }
 
-    public boolean userExists(String username) {
+    public synchronized boolean userExists(String username) {
         for (User user : users) {
             if (user.getUsername().equalsIgnoreCase(username)) {
-                return true; // Username already exists
+                return true;
             }
         }
         return false;
     }
 
 
-    public boolean deleteUser(User user) {
+    public synchronized boolean deleteUser(User user) {
         ArrayList<User> userList = new ArrayList<>();
         boolean check = false;
         for (int i = 0; i < users.size(); i++) {
@@ -55,11 +60,17 @@ public class UserDatabase implements Serializable {
         return check;
     }
 
+    public synchronized boolean addPost(Post post) {
+        if (posts == null) {
+            posts = new ArrayList<>();
+        }
+        return posts.add(post);
+    }
     public ArrayList<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts() {
+    public synchronized void setPosts() {
         for (User u : users) {
             for (Post p : u.getPosts()) {
                 posts.add(p);
@@ -67,7 +78,7 @@ public class UserDatabase implements Serializable {
         }
     }
 
-    public boolean addComment(Comment comment, Post post) {
+    public synchronized boolean addComment(Comment comment, Post post) {
         setPosts();
         for (int i = 0; i < posts.size(); i++) {
             if (post.equals(posts.get(i))) {
@@ -80,7 +91,7 @@ public class UserDatabase implements Serializable {
         return false;
     }
 
-    public boolean logIn(User user) {
+    public synchronized boolean logIn(User user) {
         for (User u : users) {
             if (u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())) {
                 return true;
@@ -89,7 +100,7 @@ public class UserDatabase implements Serializable {
         return false;
     }
 
-    public User searchUser(String search) {
+    public synchronized User searchUser(String search) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUsername().equals(search)) {
                 return users.get(i);
@@ -98,7 +109,7 @@ public class UserDatabase implements Serializable {
         return null;
     }
 
-    public boolean addCommentToPost(Comment comment, int postId) {
+    public synchronized boolean addCommentToPost(Comment comment, int postId) {
         setPosts();
         for (Post p : posts) {
             if (p.getId() == postId) {
@@ -109,7 +120,7 @@ public class UserDatabase implements Serializable {
         return false;
     }
 
-    public User validateUser(String username, String password) {
+    public synchronized User validateUser(String username, String password) {
         for (User u : users) {
             if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
                 return u;

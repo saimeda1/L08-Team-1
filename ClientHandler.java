@@ -47,6 +47,14 @@ public class ClientHandler extends Thread {
                 case "addcomment":
                     handleAddComment();
                     break;
+                case "addpost":
+                    handleAddPost();  // Make sure this line is added
+                    break;
+                default:
+                    out.writeBoolean(false);
+                    out.writeObject("Unknown command.");
+                    out.flush();
+                    break;
             }
         } catch (IOException | ClassNotFoundException e) {
             out.writeBoolean(false);
@@ -105,6 +113,18 @@ public class ClientHandler extends Thread {
         out.writeBoolean(result);
         out.flush();
     }
+
+    private void handleAddPost() throws IOException, ClassNotFoundException {
+        Post post = (Post) in.readObject();  // Directly read the post object
+        if (post != null && userDatabase.addPost(post)) {
+            out.writeBoolean(true);
+        } else {
+            out.writeBoolean(false);
+            System.out.println("Failed to add post: post object is null or addPost failed");
+        }
+        out.flush();
+    }
+
 
     private void closeResources() {
         try {

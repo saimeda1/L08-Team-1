@@ -123,16 +123,32 @@ public class Client {
     }
 
     private void handleAddPost() throws IOException {
+        if (!loggedIn || currentUser == null) {
+            System.out.println("You are not logged in.");
+            return;
+        }
         System.out.println("Enter the post content:");
         String content = scanner.nextLine();
-        Post post = new Post(content, currentUser, false);  // Assuming Post constructor
+        Post post = new Post(content, currentUser, false);
 
-        out.writeObject("addpost");
-        out.writeObject(post);
-        out.flush();
+        try {
+            out.writeObject("addpost");
+            out.writeObject(post);
+            out.flush();
 
-        readResponse();
+            boolean result = in.readBoolean();  // Reading the response from the server
+            if (result) {
+                System.out.println("Post added successfully.");
+            } else {
+                System.out.println("Failed to add post.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error during add post: " + e.toString());
+            e.printStackTrace();
+        }
     }
+
+
 
     private void handleAddComment() throws IOException {
         System.out.println("Enter post ID to comment on:");
