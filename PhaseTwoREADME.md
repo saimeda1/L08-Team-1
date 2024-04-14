@@ -170,3 +170,68 @@ This `ClientHandler` implements a thread for handling client communication on th
 ## Additional Functionality
 
 The ClientHandler class can be extended to handle additional functionalities such as searching for users, updating user profiles, posting new content, etc. These functionalities can be implemented by adding more handle methods and corresponding command cases in the processCommand() method.
+
+# IClient Interface
+
+The IClient interface defines the contract for client-side functionality in a client-server architecture. It specifies the methods that a client class must implement to interact with the server.
+
+## Methods
+
+### start()
+- **Description:**  Initiates the client's operation, typically establishing a connection with the server and starting communication.
+- **Implementation:** This method is responsible for initializing the client and initiating the communication process with the server.
+
+### processCommand(String command) 
+
+- **Description:** Processes the command received from the user or another source.
+- **Parameters:** 
+    -`command`: The command to be processed
+- **Throws:** `IOException` if an I/O Error occurs during command processing.
+- **Implementation:** This method handles the processing of different commands received from the user or other sources. It delegates the execution of specific actions based on the command.
+
+### handleLogin()
+
+- **Description:** Handles the login operation.
+- **Throws:** `IOException if an I/O error occurs during the login process.
+- **Implementation:** This method is responsible for handling the login process. It typically sends the user's credentials to the server for authentification.
+
+### handleRegister()
+
+- **Description:** Handles the user registration operation
+- **Throws:** `IOException` if an I/O error occurs during the registration process.
+- **Implementation:** This method handles the user registration process. It sends the necessary information to the server for creating a new user account.
+
+### handleAddComment()
+
+- **Description:** Handles the operation of adding a comment.
+- **Throws:** `IOException` if an I/O error occurs during the comment addition process.
+- **Implementation:** This method handles the process of adding a comment to a post. It communicates with the server to add the comment to the appropriate post.
+
+## Usage
+To implement client functionality in a client-server application, a class needs to implement the IClient interface and provide implementations for all the defined methods. These methods should handle the various aspects of client-server communication, such as initiating connections, processing commands, and interacting with the server for authentication, registration, and data manipulation operations.
+
+# IServer Interface
+
+The `IServer` interface outlines the required functionality for a server component in a client-server architecture. It defines methods that a server class must implement to manage connections, handle client requests, and perform server-side operations.
+
+## Methods
+
+### loadUsers()
+
+- **Description:** Loads user data into the server's user database.
+- **Throws:**
+    - `IOException`: If an I/O error occurs during the loading process.
+    - `ClassNotFoundException`: If the class of a serialized object cannot be found.
+- **Implementation:** This method is responsible for loadig user data from a data source, such as a file or a databse into the server's user database. It typicallly read serialized user objects and adds them to the user database.
+
+### start()
+
+- **Description:** Starts the server, enabling it to accept client connections and handle requests.
+- **Throws:** `IOException` if an I/O error occurs during the server startup process.
+- **Implementation:** This method initiates the server's operation, allowing it to listen for incoming client connections on a specified port. Once started, the server can accept client connections and handle client requests.
+
+## Usage
+
+To create a server component in a client-server application, a class needs to implement the `IServer` interface and provide implementations for the `loadUsers()` and `start()` methods. These methods should handle the initialization of the server, loading user data, and starting the server to accept client connections. Additionally, the class may include additional methods and logic for managing client connections, processing client requests, and performing server-side operations.
+
+CLIENT TEST CASES AND OTHER TEST CASES PORTIONS NEEDED. WILL ADD SUNDAY
