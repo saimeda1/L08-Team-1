@@ -3,34 +3,42 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-
-public class Server implements IServer {
+public class Server {
     private ServerSocket serverSocket;
     private UserDatabase userDatabase;
+    private static final String DATA_FILE = "server_data.dat";
 
     public Server(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        userDatabase = new UserDatabase(new ArrayList<>()); // Assuming your UserDatabase has a constructor that takes a list of Users
-        loadUsers();  // Method to load users from a file or initialize database
+        userDatabase = loadOrCreateDatabase();
     }
 
-    public void loadUsers() {
-        File file = new File("user_data.dat");
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                User user;
-                while ((user = (User) ois.readObject()) != null) {
-                    userDatabase.signUp(user);
+    private UserDatabase loadOrCreateDatabase() {
+        try {
+            File file = new File(DATA_FILE);
+            if (file.exists() && !file.isDirectory()) {
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                    return (UserDatabase) ois.readObject();
                 }
-            } catch (EOFException ignored) {
-                // End of file reached
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Failed to load database: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return new UserDatabase(new ArrayList<>());
+    }
+
+    private void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            oos.writeObject(userDatabase);
+        } catch (IOException e) {
+            System.err.println("Error saving data: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void start() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::saveData));
         System.out.println("Server started, waiting for connections...");
         try {
             while (true) {

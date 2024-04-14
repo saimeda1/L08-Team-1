@@ -2,11 +2,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client implements IClient{
+public class Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private Scanner scanner;
+    private boolean loggedIn = false;
 
     public Client(String host, int port) {
         try {
@@ -23,7 +24,11 @@ public class Client implements IClient{
     public void start() {
         try {
             while (true) {
-                System.out.println("Enter command (login, register, addcomment):");
+                if (!loggedIn) {
+                    System.out.println("Enter command (login, register):");
+                } else {
+                    System.out.println("Enter command (addcomment, addpost, logout):");
+                }
                 String command = scanner.nextLine();
                 if ("exit".equalsIgnoreCase(command)) {
                     break;
@@ -33,33 +38,35 @@ public class Client implements IClient{
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                in.close();
-                out.close();
-                socket.close();
-                scanner.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            closeResources();
         }
     }
 
-    public void processCommand(String command) throws IOException {
+    private void processCommand(String command) throws IOException {
         out.writeObject(command);
         switch (command.toLowerCase()) {
             case "login":
                 handleLogin();
                 break;
             case "register":
-
+                handleRegister();
                 break;
             case "addcomment":
-                handleAddComment();
+                if (loggedIn) handleAddComment();
+                else System.out.println("You need to log in first.");
+                break;
+            case "addpost":
+                if (loggedIn) handleAddPost();
+                else System.out.println("You need to log in first.");
+                break;
+            case "logout":
+                if (loggedIn) logout();
+                else System.out.println("You are not logged in.");
                 break;
         }
     }
 
-    public void handleLogin() throws IOException {
+    private void handleLogin() throws IOException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
@@ -68,13 +75,18 @@ public class Client implements IClient{
         out.writeObject(user);
         try {
             boolean result = in.readBoolean();
-            System.out.println(result ? "Login successful" : "Login failed");
+            if (result) {
+                loggedIn = true;
+                System.out.println("Login successful");
+            } else {
+                System.out.println("Login failed");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void handleRegister() throws IOException {
+    private void handleRegister() throws IOException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
@@ -89,20 +101,45 @@ public class Client implements IClient{
         }
     }
 
-    public void handleAddComment() throws IOException {
+    private void handleAddComment() throws IOException {
         System.out.println("Enter post ID to comment on:");
         int postId = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter your comment:");
         String content = scanner.nextLine();
-        // Assuming you have a way to get the User and Post by ID or similar
-        Post post = new Post("Example content", new User("exampleUser", "pass"), false);
-        post.setId(postId); // Set the post ID to the given ID
-        Comment comment = new Comment(content, new User("commentingUser", "pass"));
+        Comment comment = new Comment(content, new User("username", "password")); // Adjust as needed
         out.writeObject(comment);
-        out.writeObject(post);
         try {
             boolean result = in.readBoolean();
             System.out.println(result ? "Comment added successfully" : "Failed to add comment");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleAddPost() throws IOException {
+        System.out.println("Enter the post content:");
+        String content = scanner.nextLine();
+        Post post = new Post(content, new User("username", "password"), false); // Adjust as needed
+        out.writeObject(post);
+        try {
+            boolean result = in.readBoolean();
+            System.out.println(result ? "Post added successfully" : "Failed to add post");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void logout() {
+        loggedIn = false;
+        System.out.println("Logged out successfully.");
+    }
+
+    private void closeResources() {
+        try {
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (socket != null) socket.close();
+            if (scanner != null) scanner.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
