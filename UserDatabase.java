@@ -1,5 +1,11 @@
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
@@ -15,24 +21,35 @@ public class UserDatabase implements Serializable {
         this.users = users;
     }
 
-    public boolean signUp(User user) {
-        for (User u : users) {
-            if (u.equals(user)) {
+    public boolean signUp(User newUser) {
+        for (User user : users) {
+            if (user.getUsername().equals(newUser.getUsername())) {
                 return false;
             }
         }
-        users.add(user);
+        users.add(newUser);
         return true;
     }
+
+    public boolean userExists(String username) {
+        for (User user : users) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                return true; // Username already exists
+            }
+        }
+        return false;
+    }
+
+
     public boolean deleteUser(User user) {
         ArrayList<User> userList = new ArrayList<>();
         boolean check = false;
-        for (int i = 0; i < users.length; i++) {
-            if (users[i].equals(user)) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).equals(user)) {
                 check = true;
                 continue;
             }
-            userList.add(users[i]);
+            userList.add(users.get(i));
         }
         this.users = userList;
         return check;
@@ -81,5 +98,24 @@ public class UserDatabase implements Serializable {
         return null;
     }
 
+    public boolean addCommentToPost(Comment comment, int postId) {
+        setPosts();
+        for (Post p : posts) {
+            if (p.getId() == postId) {
+                p.getComments().add(comment);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public User validateUser(String username, String password) {
+        for (User u : users) {
+            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
+                return u;
+            }
+        }
+        return null;
+    }
 
 }
