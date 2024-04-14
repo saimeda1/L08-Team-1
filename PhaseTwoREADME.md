@@ -11,6 +11,8 @@ Running Test Cases: To run the test cases, you would use the Java command follow
 
 java ServerTestCases
 
+You can start the main method in the Server to set up the server and run the main method in the client to connect to the server. We have implemented serialization so when you connect to the server as a client you will communicate with the server so the server will store all the data. To manually test the code you will can open the terminal after connecting to the server and login,register,addposts, or addcomments. All of these functions are thread safe and will not store data locally.
+
 A main method will be implemented alongside a GUI in future phases for easier usability.
 
 ## Project Overview
