@@ -9,11 +9,15 @@ public class Server {
     private static final String DATA_FILE = "server_data.dat";
 
     public Server(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
+        serverSocket = createServerSocket(port);
         userDatabase = loadOrCreateDatabase();
     }
 
-    private UserDatabase loadOrCreateDatabase() {
+    protected ServerSocket createServerSocket(int port) throws IOException {
+        return new ServerSocket(port);
+    }
+
+    protected UserDatabase loadOrCreateDatabase() {
         try {
             File file = new File(DATA_FILE);
             if (file.exists() && !file.isDirectory()) {
@@ -28,7 +32,7 @@ public class Server {
         return new UserDatabase(new ArrayList<>());
     }
 
-    private void saveData() {
+    protected void saveData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             oos.writeObject(userDatabase);
         } catch (IOException e) {
@@ -38,7 +42,6 @@ public class Server {
     }
 
     public void start() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::saveData));
         System.out.println("Server started, waiting for connections...");
         try {
             while (true) {
