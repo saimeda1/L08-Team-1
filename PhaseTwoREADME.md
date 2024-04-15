@@ -285,6 +285,7 @@ To run the tests, you need to have JUnit 5 installed in your development environ
 1. Navigate to the `ClientTestCases` class.
 2. Run each test method individuallly or run all tests together.
 3. View the test results in your IDE's test runner.
+4. When you run the client test, modify the input username and password in both register and login section to mak them identical otherwise the login will fail.
 
 ## Test Cases
 1. testRegisterCommandHandling()
@@ -295,3 +296,9 @@ This test verifies the functionality of the login command handling in the client
 
 3. testExitCommandHandling()
 This test verifies the functionality of the exit command handling in the client application. It simulates user input to exit the application and checks if the expected output matches the actual output.
+
+4. testAddPostCommandHandling()
+This tests adds post command handling functionality. It verifies that the client correctly adds a post when provided with valid input.
+
+5. testAddCommentCommandHandling()
+This tests the add comment command handling functionality. It verifies that the client correctly adds a comment to a post when provided with a valid input.

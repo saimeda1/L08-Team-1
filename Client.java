@@ -1,7 +1,15 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
-
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.15
+ * The Client class represents a client application that interacts 
+ * with a server through a socket connection. It provides functionality
+ * for user authentication, posting content, commenting on posts,
+ * and logging out.
+ * This is for phase 2.
+ */
 public class Client {
     private Socket socket;
     private ObjectOutputStream out;

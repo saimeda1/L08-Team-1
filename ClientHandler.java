@@ -1,6 +1,15 @@
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.15
+ * The ClientHandler class represents a thread that handles communication
+ * with a single client. It receives commands from the client, processes them,
+ * and sends back appropriate responses
+ * This is for phase 2.
+ */
+
 public class ClientHandler extends Thread {
     private Socket clientSocket;
     private UserDatabase userDatabase;

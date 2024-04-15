@@ -5,6 +5,14 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.15
+ * The ClientTestCases class contains JUnit test cases for testing the functionality
+ * of the Client class.
+ * This is for phase 2.
+ */
+
 public class ClientTestCases {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();

@@ -3,6 +3,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+ * @version Apr.15
+ * The Server class represents a server application that manages client connections
+ * and user data in a social media system.
+ * This is for phase 2.
+ */
+
 public class Server {
     private ServerSocket serverSocket;
     private UserDatabase userDatabase;
