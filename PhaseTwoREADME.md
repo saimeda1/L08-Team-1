@@ -234,4 +234,17 @@ The `IServer` interface outlines the required functionality for a server compone
 
 To create a server component in a client-server application, a class needs to implement the `IServer` interface and provide implementations for the `loadUsers()` and `start()` methods. These methods should handle the initialization of the server, loading user data, and starting the server to accept client connections. Additionally, the class may include additional methods and logic for managing client connections, processing client requests, and performing server-side operations.
 
-CLIENT TEST CASES AND OTHER TEST CASES PORTIONS NEEDED. WILL ADD SUNDAY
+# FriendTestCases
+
+## testBlockUnblock()
+
+- Verifies the functionality of blocking and unblocking a friend.
+
+## testAddPost()
+- Tests the addition of a post to a friend's post list.
+
+## testDownVotePost()
+- Tests the downvoting functionality of a post by a friend.
+
+## testVoteOnNullPost()
+- Tests the behavior of voting on a null post, expecting false.
