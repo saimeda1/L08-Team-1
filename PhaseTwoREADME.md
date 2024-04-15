@@ -305,4 +305,4 @@ This tests the add comment command handling functionality. It verifies that the 
 
 # Who Submitted What
 - Bianca Olea worked on checking the code and docuumentation for the various files and READMe
-- Chenjun Zhou designed the test cases class to test the client and server.
+- Chenjun Zhou and Xinan Qin designed the test cases class to test the client and server.
