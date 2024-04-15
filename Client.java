@@ -8,13 +8,14 @@ public class Client {
     private ObjectInputStream in;
     private Scanner scanner;
     private boolean loggedIn = false;
+    private User currentUser; // User object to keep track of the currently logged-in user
 
     public Client(String host, int port) {
         try {
-            this.socket = new Socket(host, port);
-            this.out = new ObjectOutputStream(socket.getOutputStream());
-            this.in = new ObjectInputStream(socket.getInputStream());
-            this.scanner = new Scanner(System.in);
+            socket = new Socket(host, port);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            scanner = new Scanner(System.in);
         } catch (IOException e) {
             System.err.println("Error connecting to the server: " + e.getMessage());
             System.exit(1);
@@ -25,9 +26,9 @@ public class Client {
         try {
             while (true) {
                 if (!loggedIn) {
-                    System.out.println("Enter command (login, register):");
+                    System.out.println("Enter command (login, register, exit):");
                 } else {
-                    System.out.println("Enter command (addcomment, addpost, logout):");
+                    System.out.println("Enter command (addcomment, addpost, logout, exit):");
                 }
                 String command = scanner.nextLine();
                 if ("exit".equalsIgnoreCase(command)) {
@@ -36,14 +37,15 @@ public class Client {
                 processCommand(command);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Connection error: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         } finally {
             closeResources();
         }
     }
 
-    private void processCommand(String command) throws IOException {
-        out.writeObject(command);
+    private void processCommand(String command) throws IOException, ClassNotFoundException {
         switch (command.toLowerCase()) {
             case "login":
                 handleLogin();
@@ -51,17 +53,19 @@ public class Client {
             case "register":
                 handleRegister();
                 break;
-            case "addcomment":
-                if (loggedIn) handleAddComment();
-                else System.out.println("You need to log in first.");
+            case "logout":
+                handleLogout();
                 break;
             case "addpost":
                 if (loggedIn) handleAddPost();
-                else System.out.println("You need to log in first.");
+                else System.out.println("Please login to add a post.");
                 break;
-            case "logout":
-                if (loggedIn) logout();
-                else System.out.println("You are not logged in.");
+            case "addcomment":
+                if (loggedIn) handleAddComment();
+                else System.out.println("Please login to add a comment.");
+                break;
+            default:
+                System.out.println("Invalid command.");
                 break;
         }
     }
@@ -71,67 +75,115 @@ public class Client {
         String username = scanner.nextLine();
         System.out.println("Enter password:");
         String password = scanner.nextLine();
-        User user = new User(username, password);
-        out.writeObject(user);
+
+        out.writeObject("login");
+        out.writeObject(username);
+        out.writeObject(password);
+        out.flush();
+
         try {
-            boolean result = in.readBoolean();
+            boolean result = in.readBoolean();  // Reading the login result
             if (result) {
+                currentUser = (User) in.readObject();  // Expecting a user object on success
                 loggedIn = true;
-                System.out.println("Login successful");
+                System.out.println("Login successful. Welcome, " + currentUser.getUsername() + "!");
             } else {
-                System.out.println("Login failed");
+                String errorMessage = (String) in.readObject();  // Reading error message on failure
+                System.out.println("Login failed: " + errorMessage);
             }
-        } catch (IOException e) {
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error reading user data: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void handleRegister() throws IOException {
+    private void handleLogout() throws IOException {
+        out.writeObject("logout");
+        out.flush();
+
+        loggedIn = false;
+        currentUser = null;
+        System.out.println("Logged out successfully.");
+    }
+
+    private void handleRegister() throws IOException, ClassNotFoundException {
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
         String password = scanner.nextLine();
-        User user = new User(username, password);
-        out.writeObject(user);
-        try {
-            boolean result = in.readBoolean();
-            System.out.println(result ? "Registration successful" : "Registration failed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void handleAddComment() throws IOException {
-        System.out.println("Enter post ID to comment on:");
-        int postId = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter your comment:");
-        String content = scanner.nextLine();
-        Comment comment = new Comment(content, new User("username", "password")); // Adjust as needed
-        out.writeObject(comment);
-        try {
-            boolean result = in.readBoolean();
-            System.out.println(result ? "Comment added successfully" : "Failed to add comment");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        out.writeObject("register");
+        out.writeObject(username);
+        out.writeObject(password);
+        out.flush();
+
+        boolean result = in.readBoolean();
+        String message = (String) in.readObject();
+        System.out.println(message);
     }
 
     private void handleAddPost() throws IOException {
+        if (!loggedIn || currentUser == null) {
+            System.out.println("You are not logged in.");
+            return;
+        }
         System.out.println("Enter the post content:");
         String content = scanner.nextLine();
-        Post post = new Post(content, new User("username", "password"), false); // Adjust as needed
-        out.writeObject(post);
+        Post post = new Post(content, currentUser, false);
+
         try {
-            boolean result = in.readBoolean();
-            System.out.println(result ? "Post added successfully" : "Failed to add post");
-        } catch (IOException e) {
+            out.writeObject("addpost");
+            out.writeObject(post);
+            out.flush();
+
+            boolean result = in.readBoolean();  // Reading the response from the server
+            if (result) {
+                System.out.println("Post added successfully.");
+            } else {
+                System.out.println("Failed to add post.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error during add post: " + e.toString());
             e.printStackTrace();
         }
     }
 
-    private void logout() {
-        loggedIn = false;
-        System.out.println("Logged out successfully.");
+
+
+    private void handleAddComment() throws IOException {
+        System.out.println("Enter post ID to comment on:");
+        int postId;
+        try {
+            postId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input for post ID. Please enter a numeric value.");
+            return;
+        }
+
+        System.out.println("Enter your comment:");
+        String content = scanner.nextLine();
+        Comment comment = new Comment(content, currentUser);  // Assuming Comment constructor
+
+        out.writeObject("addcomment");
+        out.writeObject(comment);
+        out.writeObject(postId);
+        out.flush();
+
+        readResponse();
+    }
+
+    private void readResponse() throws IOException {
+        try {
+            boolean result = in.readBoolean();
+            if (result) {
+                System.out.println("Action completed successfully.");
+            } else {
+                System.out.println("Action failed.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error while reading response: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void closeResources() {
@@ -141,7 +193,7 @@ public class Client {
             if (socket != null) socket.close();
             if (scanner != null) scanner.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error closing resources: " + e.getMessage());
         }
     }
 
