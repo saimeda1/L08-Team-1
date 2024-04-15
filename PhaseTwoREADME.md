@@ -236,17 +236,62 @@ The `IServer` interface outlines the required functionality for a server compone
 
 To create a server component in a client-server application, a class needs to implement the `IServer` interface and provide implementations for the `loadUsers()` and `start()` methods. These methods should handle the initialization of the server, loading user data, and starting the server to accept client connections. Additionally, the class may include additional methods and logic for managing client connections, processing client requests, and performing server-side operations.
 
-# FriendTestCases
+# ServerTestCases
 
-## testBlockUnblock()
+## Description
 
-- Verifies the functionality of blocking and unblocking a friend.
+The `ServerTestCases` class contains a single test method
+`testServerInitialization()` that verifies the initialization of a server object.
 
-## testAddPost()
-- Tests the addition of a post to a friend's post list.
+## Dependencies
+- JUnit 5: The test cases are written using JUnit 5 framework.
 
-## testDownVotePost()
-- Tests the downvoting functionality of a post by a friend.
+## Getting Started
+To run the tests, you need to have JUnit5 installed in your development environment. You can add it as a dependency in your build configuration file (e.g. `pom.sml` for Maven or `build.gradle` for Gradle).
 
-## testVoteOnNullPost()
-- Tests the behavior of voting on a null post, expecting false.
+## Prequisites
+- Java Development Kit (JDK) installed on your machine.
+- Development environment set up with build tools (e.g., Maven, Gradle).
+
+## Usage
+
+1. Navigate to the `ServerTestCases` class.
+2. Run the `testServerInitialization()` method.
+3. View the test results in your IDE's test runner.
+
+# ClientTestCases
+
+This repository contains JUnit test cases for testing the functionality of a client application.
+
+## Description
+
+The `ClientTestCases` class contains several test methods that verify the behavior of the client application under different scenarios, including command handling for registration, login, and exit.
+
+## Dependencies
+
+- JUnit 5: The test cases are written using JUnit 5 framework.
+
+## Getting Started
+
+To run the tests, you need to have JUnit 5 installed in your development environment. You can add it as a dependency in your build configuration file (e.g., `pom.xml` for Maven or `build.gradle` for Gradle).
+
+## Prerequisites
+
+- Java Development Kit (JDK) installed on your machine.
+- Development environment set up with build tools (e.g., Maven, Gradle).
+
+## Usage
+
+1. Navigate to the `ClientTestCases` class.
+2. Run each test method individuallly or run all tests together.
+3. View the test results in your IDE's test runner.
+
+## Test Cases
+1. testRegisterCommandHandling()
+This test verifies the functionality of the registration command handling in the client application. It simulates user input for registration and checks if the expected output matches the actual output.
+
+2. testLoginCommandHandling()
+This test verifies the functionality of the login command handling in the client application. It simulates user input for login and checks if the expected output matches the actual output.
+
+3. testExitCommandHandling()
+This test verifies the functionality of the exit command handling in the client application. It simulates user input to exit the application and checks if the expected output matches the actual output.
