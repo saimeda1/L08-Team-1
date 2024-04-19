@@ -304,4 +304,4 @@ This tests adds post command handling functionality. It verifies that the client
 This tests the add comment command handling functionality. It verifies that the client correctly adds a comment to a post when provided with a valid input.
 
 # Who Submitted What
-- Bianca Olea worked on checking the code and docuumentation for the various files and READMe
+- Bianca Olea worked on checking the code and documentation for the various files and READMe
