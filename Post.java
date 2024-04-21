@@ -101,6 +101,10 @@ public class Post implements IPost, Serializable {
         dislikes++;
     }
 
+    public void addComment(Comment comment) {
+        comments.add(comment);
+    } //PHASE 3
+
     public String toString() {
         String result = "";
         for (int i = 0; i < comments.size(); i++) {

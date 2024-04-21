@@ -66,6 +66,7 @@ public class UserDatabase implements Serializable {
         }
         return posts.add(post);
     }
+
     public ArrayList<Post> getPosts() {
         return posts;
     }

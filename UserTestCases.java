@@ -1,6 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.beans.Transient;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
@@ -55,6 +57,31 @@ public class UserTestCases {
         assertTrue("Post should be deleted successfully", result);
         assertEquals("Posts list should be empty after deletion", 0, user.getPosts().size());
     }
+
+    @Test
+    public void testUpVotePost() {
+        user.addPost(post);
+        boolean result = user.upVotePost(post);
+        assertTrue("Post should be up voted successfully", result);
+        assertEquals("Post's likes should be 1", 1, post.getLikes());
+    } //PHASE 3 TESTCASE
+
+    @Test
+    public void testDownVotePost() {
+        user.addPost(post);
+        boolean result = user.downVotePost(post);
+        assertTrue("Post should be deleted successfully", result);
+        assertEquals("Post's dislikes should be 1", 1, post.getDislikes());
+
+    } //PHASE 3 TESTCASE
+
+    @Test
+    public void testHidePost() {
+        user.addPost(post);
+        boolean result = user.hidePost(post.getId());
+        assertTrue("Post should be hidden successfully", result);
+        assertEquals("Posts lists should be empty after deletion", 0, user.getPosts().size());
+    } //PHASE 3 TESTCASE
 
     @Test
     public void testUpVoteComment() {

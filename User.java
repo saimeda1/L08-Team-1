@@ -174,6 +174,42 @@ public class User implements IUser, Serializable {
         return true;
     }
 
+    public boolean upVotePost(Post post) {
+        if (post == null) {
+            return false;
+        }
+        post.upVote();
+        return true;
+    } //PHASE 3: UPVOTE POSTS FROM FEED
+
+    public boolean downVotePost(Post post) {
+        if (post == null) {
+            return false;
+        }
+        post.downVote();
+        return true;
+    } //PHASE 3: DOWNVOTE POSTS FROM FEED
+
+    public boolean hidePost(int postId) {
+        for (Post post: posts) {
+            if (post.getId() == postId) {
+                post.setHide(true);
+                return true;
+            }
+        }
+        return false;
+    } //PHASE 3: HIDE POSTS FROM FEED
+
+    public boolean unhidePost(int postId) {
+        for (Post post: posts) {
+            if (post.getId() == postId) {
+                post.setHide(false);
+                return true;
+            }
+        }
+        return false;
+    } //PHASE 3: UNHIDING POSTS FROM FEED
+
     public void addPost(Post post) {
         posts.add(post);
     }
@@ -187,8 +223,11 @@ public class User implements IUser, Serializable {
     }
 
     public void addComment(Post post, Comment comment) {
-
-    }
+        if (post != null && comment != null) {
+            post.addComment(comment);
+            comments.add(comment);
+        }
+    } //PHASE 3 SERVER ADD COMMENTS
 
 
 }
