@@ -33,7 +33,7 @@ public class NewClient {
 
             boolean result = in.readBoolean();
             if (result) {
-                User user = (User) in.readObject();  // Assuming User class is serializable and available
+                User user = (User) in.readObject();
                 SwingUtilities.invokeLater(() -> {
                     gui.switchToPostView();
                     gui.displayMessage("Login successful. Welcome, " + user.getUsername() + "!");
@@ -84,7 +84,7 @@ public class NewClient {
     public void handleAddPost(String content) {
         try {
             out.writeObject("addpost");
-            out.writeObject(new Post(content,currentUser, false));  // Assuming Post class is serializable and available
+            out.writeObject(new Post(content,currentUser, false));
             out.flush();
 
             boolean result = in.readBoolean();
@@ -101,7 +101,7 @@ public class NewClient {
     public void handleAddComment(String content, int postId) {
         try {
             out.writeObject("addcomment");
-            out.writeObject(new Comment(content, currentUser));  // Assuming Comment class is serializable and available
+            out.writeObject(new Comment(content, currentUser));
             out.flush();
 
             boolean result = in.readBoolean();
