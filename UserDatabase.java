@@ -1,11 +1,6 @@
 import java.util.ArrayList;
 import java.io.Serializable;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
@@ -128,6 +123,45 @@ public class UserDatabase implements Serializable {
             }
         }
         return null;
+    }
+    public synchronized boolean manageFriendRequest(String requestingUsername, String targetUsername, boolean isBlock) {
+        User requestingUser = searchUser(requestingUsername);
+        User targetUser = searchUser(targetUsername);
+
+        if (requestingUser == null || targetUser == null) return false;
+
+        // Check if the target user is already a friend (or blocked friend)
+        for (Friend friend : requestingUser.getFriends()) {
+            if (friend.getUsername().equals(targetUsername)) {
+                if (isBlock) {
+                    friend.setBlock(true);  // Block the user
+                } else {
+                    friend.setBlock(false); // Unblock/Add the user
+                }
+                return true;
+            }
+        }
+
+        // If not already friends or blocked, and not a block request, add as new friend
+        if (!isBlock) {
+            Friend newFriend = new Friend(targetUsername, targetUser.getPassword(), false);
+            requestingUser.getFriends().add(newFriend);
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized boolean deletePost(int postId) {
+        return posts.removeIf(post -> post.getId() == postId);
+    }
+
+    public synchronized boolean deleteComment(int commentId) {
+        for (Post post : posts) {
+            if (post.getComments().removeIf(comment -> comment.getId() == commentId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

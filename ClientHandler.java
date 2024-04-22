@@ -78,7 +78,8 @@ public class ClientHandler extends Thread {
         User user = userDatabase.validateUser(username, password);
         if (user != null) {
             out.writeBoolean(true);
-            out.writeObject(user);  // Ensure the user object is being sent back correctly
+            out.writeObject(user);
+            // Ensure the user object is being sent back correctly
         } else {
             out.writeBoolean(false);
             out.writeObject("Invalid credentials or user does not exist.");
@@ -144,4 +145,40 @@ public class ClientHandler extends Thread {
             System.err.println("Error closing resources: " + e.getMessage());
         }
     }
+    private void handleSearchUser() throws IOException, ClassNotFoundException {
+        String searchUsername = (String) in.readObject();
+        User user = userDatabase.searchUser(searchUsername);
+        if (user != null) {
+            out.writeBoolean(true);
+            out.writeObject(user);
+        } else {
+            out.writeBoolean(false);
+            out.writeObject("User not found.");
+        }
+        out.flush();
+    }
+    private void handleFriendRequest() throws IOException, ClassNotFoundException {
+        String username = (String) in.readObject();  // Reading the username
+        String friendUsername = (String) in.readObject();
+        boolean isBlock = in.readBoolean();
+        boolean result = userDatabase.manageFriendRequest(username, friendUsername, isBlock);
+        out.writeBoolean(result);
+        out.flush();
+    }
+
+
+    private void handleDeleteComment() throws IOException, ClassNotFoundException {
+        int commentId = (int) in.readObject(); // Reading the comment ID directly
+        boolean result = userDatabase.deleteComment(commentId);
+        out.writeBoolean(result);
+        out.flush();
+    }
+
+    private void handleDeletePost() throws IOException, ClassNotFoundException {
+        int postId = (int) in.readObject(); // Reading the post ID directly
+        boolean result = userDatabase.deletePost(postId);
+        out.writeBoolean(result);
+        out.flush();
+    }
+
 }

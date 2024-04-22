@@ -4,7 +4,7 @@ import java.util.Scanner;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.15
- * The Client class represents a client application that interacts 
+ * The Client class represents a client application that interacts
  * with a server through a socket connection. It provides functionality
  * for user authentication, posting content, commenting on posts,
  * and logging out.
@@ -16,7 +16,8 @@ public class Client {
     private ObjectInputStream in;
     private Scanner scanner;
     private boolean loggedIn = false;
-    private User currentUser; // User object to keep track of the currently logged-in user
+    private User currentUser;
+    // User object to keep track of the currently logged-in user
 
     public Client(String host, int port) {
         try {
@@ -193,6 +194,60 @@ public class Client {
             e.printStackTrace();
         }
     }
+    private void handleSearchUser() throws IOException, ClassNotFoundException {
+        System.out.println("Enter username to search:");
+        String username = scanner.nextLine();
+        out.writeObject("searchuser");
+        out.writeObject(username);
+        out.flush();
+        boolean success = in.readBoolean();
+        if (success) {
+            User user = (User) in.readObject();
+            System.out.println("User found: " + user.getUsername());
+        } else {
+            String message = (String) in.readObject();
+            System.out.println(message);
+        }
+    }
+    private void handleFriendRequest(boolean isBlock) throws IOException {
+        System.out.println("Enter friend's username:");
+        String friendUsername = scanner.nextLine();
+        out.writeObject("friendrequest");
+        out.writeObject(friendUsername);
+        out.writeBoolean(isBlock);
+        out.flush();
+        readResponse();
+    }
+
+    private void handleDeleteComment() throws IOException {
+        System.out.println("Enter comment ID:");
+        int commentId = Integer.parseInt(scanner.nextLine());
+        out.writeObject("deletecomment");
+        out.writeObject(commentId);
+        out.flush();
+        readResponse();
+    }
+
+    private void handleDeletePost() throws IOException {
+        if (!loggedIn || currentUser == null) {
+            System.out.println("You are not logged in.");
+            return;
+        }
+        System.out.println("Enter post ID:");
+        int postId = Integer.parseInt(scanner.nextLine());
+
+        out.writeObject("deletepost");
+        out.writeObject(currentUser.getUsername());  // Send the username first
+        out.writeObject(postId);
+        out.flush();
+
+        boolean result = in.readBoolean();
+        if (result) {
+            System.out.println("Post deleted successfully.");
+        } else {
+            System.out.println("Failed to delete post.");
+        }
+    }
 
     private void closeResources() {
         try {
@@ -209,4 +264,6 @@ public class Client {
         Client client = new Client("localhost", 1112);
         client.start();
     }
+
+
 }
