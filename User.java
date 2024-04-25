@@ -220,14 +220,14 @@ public class User implements IUser, Serializable {
                 System.out.println(p.toString());
             }
         }
-    }
+    } //PHASE 3: DISPLAY FRIENDS POSTS
 
     public void addComment(Post post, Comment comment) {
         if (post != null && comment != null) {
             post.addComment(comment);
             comments.add(comment);
         }
-    } //PHASE 3 SERVER ADD COMMENTS
+    } //PHASE 3: SERVER ADD COMMENTS
 
 
 }
