@@ -138,17 +138,17 @@ public class UserDatabase implements Serializable {
                 } else {
                     friend.setBlock(false); // Unblock/Add the user
                 }
-                return true;
+                return false;
             }
         }
 
         // If not already friends or blocked, and not a block request, add as new friend
-        if (!isBlock) {
+        //if (!isBlock) {
             Friend newFriend = new Friend(targetUsername, targetUser.getPassword(), false);
             requestingUser.getFriends().add(newFriend);
             return true;
-        }
-        return false;
+        //}
+        //return false;
     }
 
     public synchronized boolean deletePost(int postId) {
@@ -162,6 +162,16 @@ public class UserDatabase implements Serializable {
             }
         }
         return false;
+    }
+    public synchronized ArrayList<Post> getFriendPosts(User user) {
+        ArrayList<Post> friendPosts = new ArrayList<>();
+        for (Friend friend : user.getFriends()) {
+            User friendUser = searchUser(friend.getUsername());
+            if (friendUser != null && !friend.isBlock()) {
+                friendPosts.addAll(friendUser.getPosts()); // Assuming User has a getPosts method
+            }
+        }
+        return friendPosts;
     }
 
 }
