@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
@@ -58,6 +59,21 @@ public class ClientHandler extends Thread {
                     break;
                 case "addpost":
                     handleAddPost();  // Make sure this line is added
+                    break;
+                case "searchuser" :
+                    handleSearchUser();
+                    break;
+                case "friendrequest" :
+                    handleFriendRequest();
+                    break;
+                case "deletecomment" :
+                    handleDeleteComment();
+                    break;
+                case "deletepost" :
+                    handleDeletePost();
+                    break;
+                case "fetchFriendPosts" :
+                    handleFetchFriendPosts();
                     break;
                 default:
                     out.writeBoolean(false);
@@ -180,5 +196,37 @@ public class ClientHandler extends Thread {
         out.writeBoolean(result);
         out.flush();
     }
+    private void handleFetchFriendPosts() throws IOException {
+        try {
+            // Read the username sent by the client after the fetchFriendPosts command
+            String username = (String) in.readObject();
+
+            // Search for the user in the database
+            User currentUser = userDatabase.searchUser(username);
+
+            // Ensure that the user exists and is logged in
+            if (currentUser == null) {
+                out.writeBoolean(false);
+                out.writeObject("User not found or not logged in.");
+                out.flush();
+                return;
+            }
+
+            // Fetch friend posts from the database
+            ArrayList<Post> friendPosts = userDatabase.getFriendPosts(currentUser);
+            if (friendPosts.isEmpty()) {
+                out.writeBoolean(false);
+                out.writeObject("No posts found from friends.");
+            } else {
+                out.writeBoolean(true);
+                out.writeObject(friendPosts.toArray(new Post[0])); // Serialize as an array of posts
+            }
+        } catch (ClassNotFoundException e) {
+            out.writeBoolean(false);
+            out.writeObject("Error processing request: " + e.getMessage());
+        }
+        out.flush();
+    }
+
 
 }
