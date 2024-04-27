@@ -33,10 +33,10 @@ public class NewClient {
 
             boolean result = in.readBoolean();
             if (result) {
-                User user = (User) in.readObject();
+                currentUser = (User) in.readObject();
                 SwingUtilities.invokeLater(() -> {
                     gui.switchToPostView();
-                    gui.displayMessage("Login successful. Welcome, " + user.getUsername() + "!");
+                    gui.displayMessage("Login successful. Welcome, " + currentUser.getUsername() + "!");
                 });
             } else {
                 String errorMessage = (String) in.readObject();
@@ -46,6 +46,7 @@ public class NewClient {
             SwingUtilities.invokeLater(() -> gui.displayMessage("Connection error: " + e.getMessage()));
         }
     }
+
 
     public void handleLogout() {
         try {
@@ -112,6 +113,110 @@ public class NewClient {
             }
         } catch (IOException e) {
             SwingUtilities.invokeLater(() -> gui.displayMessage("Error sending comment: " + e.getMessage()));
+        }
+    }
+
+    public void handleSearchUser(String username) {
+        try {
+            out.writeObject("searchuser");
+            out.writeObject(username);
+            out.flush();
+            boolean success = in.readBoolean();
+            if (success) {
+                User user = (User) in.readObject();
+                SwingUtilities.invokeLater(() -> gui.displayMessage("User found: " + user.getUsername()));
+            } else {
+                String message = (String) in.readObject();
+                SwingUtilities.invokeLater(() -> gui.displayMessage(message));
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            SwingUtilities.invokeLater(() -> gui.displayMessage("Error searching user: " + e.getMessage()));
+        }
+    }
+    public void reconnect() {
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+            socket = new Socket(socket.getInetAddress().getHostName(), socket.getPort());
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            gui.displayMessage("Reconnected to the server.");
+        } catch (IOException e) {
+            gui.displayMessage("Failed to reconnect: " + e.getMessage());
+        }
+    }
+
+
+    public void handleFriendRequest(String friendUsername, boolean isBlock) {
+        try {
+            out.writeObject("friendrequest");
+            out.writeObject(friendUsername);
+            out.writeBoolean(isBlock);
+            out.flush();
+
+            boolean result = in.readBoolean();
+            SwingUtilities.invokeLater(() -> gui.displayMessage(result ? "Request sent successfully." : "Failed to send request."));
+        } catch (IOException e) {
+            SwingUtilities.invokeLater(() -> gui.displayMessage("Connection error, attempting to reconnect..."));
+            reconnect();
+            // Try again after reconnecting, if critical, add retry logic here
+            try {
+                out.writeObject("friendrequest");
+                out.writeObject(currentUser.getUsername());
+                out.writeObject(friendUsername);
+                out.writeBoolean(isBlock);
+                out.flush();
+
+                boolean result = true;
+                SwingUtilities.invokeLater(() -> gui.displayMessage(result ? "Request sent successfully." : "Failed to send request."));
+            } catch (IOException e1) {
+                SwingUtilities.invokeLater(() -> gui.displayMessage("Failed to send request after reconnecting: " + e1.getMessage()));
+            }
+        }
+    }
+
+    public void handleDeleteComment(int commentId) {
+        try {
+            out.writeObject("deletecomment");
+            out.writeObject(commentId);
+            out.flush();
+
+            boolean result = in.readBoolean();
+            SwingUtilities.invokeLater(() -> gui.displayMessage(result ? "Comment deleted successfully." : "Failed to delete comment."));
+        } catch (IOException e) {
+            SwingUtilities.invokeLater(() -> gui.displayMessage("Error deleting comment: " + e.getMessage()));
+        }
+    }
+
+    public void handleDeletePost(int postId) {
+        try {
+            out.writeObject("deletepost");
+            out.writeObject(postId);
+            out.flush();
+
+            boolean result = in.readBoolean();
+            SwingUtilities.invokeLater(() -> gui.displayMessage(result ? "Post deleted successfully." : "Failed to delete post."));
+        } catch (IOException e) {
+            SwingUtilities.invokeLater(() -> gui.displayMessage("Error deleting post: " + e.getMessage()));
+        }
+    }
+
+    public void fetchFriendPosts() {
+        try {
+            out.writeObject("fetchFriendPosts");
+            out.writeObject(currentUser.getUsername());
+            out.flush();
+
+            Object response = in.readObject();
+            if (response instanceof String[]) {
+                String[] posts = (String[]) response;
+                gui.displayFriendPosts(posts);
+            } else {
+                SwingUtilities.invokeLater(() -> gui.displayMessage("Failed to fetch friend posts."));
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            SwingUtilities.invokeLater(() -> gui.displayMessage("Error fetching friend posts: " + e.getMessage()));
         }
     }
 
