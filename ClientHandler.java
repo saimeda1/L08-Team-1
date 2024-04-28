@@ -155,16 +155,20 @@ public class ClientHandler extends Thread {
     }
 
     private void handleAddPost() throws IOException, ClassNotFoundException {
-        Post post = (Post) in.readObject();
-        if (post != null && userDatabase.addPost(post)) {
+        String username = (String) in.readObject();  // Read the username
+        Post post = (Post) in.readObject();  // Directly read the post object
+
+        if (post != null && userDatabase.addPost(post, username)) {  // Now also pass the username
             saveData();  // Save the user database after adding a new post
             out.writeBoolean(true);
+            out.writeObject("Post added successfully.");
         } else {
             out.writeBoolean(false);
-            System.out.println("Failed to add post: post object is null or addPost failed");
+            out.writeObject("Failed to add post: post object is null or addPost failed");
         }
         out.flush();
     }
+
 
     private void closeResources() {
         try {
@@ -196,6 +200,7 @@ public class ClientHandler extends Thread {
         out.writeBoolean(result);
         if (result) {
             out.writeObject("Friend request processed successfully.");
+            saveData();  // Save the user database after processing a friend request
         } else {
             out.writeObject("Failed to process friend request.");
         }

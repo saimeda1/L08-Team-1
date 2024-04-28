@@ -162,22 +162,18 @@ public class Client {
         }
         System.out.println("Enter the post content:");
         String content = scanner.nextLine();
-        Post post = new Post(content, currentUser, false);
+        Post post = new Post(content, currentUser, false);  // Post creation remains the same
 
-        try {
-            out.writeObject("addpost");
-            out.writeObject(post);
-            out.flush();
+        out.writeObject("addpost");
+        out.writeObject(currentUser.getUsername());  // Send username
+        out.writeObject(post);  // Send the post object
+        out.flush();
 
-            boolean result = in.readBoolean();  // Reading the response from the server
-            if (result) {
-                System.out.println("Post added successfully.");
-            } else {
-                System.out.println("Failed to add post.");
-            }
-        } catch (Exception e) {
-            System.err.println("Error during add post: " + e.toString());
-            e.printStackTrace();
+        boolean result = in.readBoolean();  // Reading the response from the server
+        if (result) {
+            System.out.println("Post added successfully.");
+        } else {
+            System.out.println("Failed to add post.");
         }
     }
 

@@ -7,12 +7,16 @@ import java.io.Serializable;
  */
 public class Friend extends User implements IFriend, Serializable {
     private boolean block;
-    ArrayList<Post> friendPost = new ArrayList<>();
+    ArrayList<Post> friendPosts = new ArrayList<>();
+
+    private static final long serialVersionUID = 5304409008073757322L;
 
     public Friend(String username, String password, boolean block) {
         super(username, password);
         this.block = block;
+        this.friendPosts = new ArrayList<>();  // Initialize posts for the friend
     }
+
 
     public boolean isBlock() {
         return block;
@@ -23,7 +27,7 @@ public class Friend extends User implements IFriend, Serializable {
     }
 
     public ArrayList<Post> getFriendPost() {
-        return friendPost;
+        return friendPosts;
     }
 
     public boolean upVotePost(Post post) {
@@ -44,6 +48,6 @@ public class Friend extends User implements IFriend, Serializable {
 
     @Override
     public void addPost(Post post) {
-        friendPost.add(post);
+        friendPosts.add(post);
     }
 }

@@ -54,12 +54,25 @@ public class UserDatabase implements Serializable {
         return check;
     }
 
-    public synchronized boolean addPost(Post post) {
-        if (posts == null) {
-            posts = new ArrayList<>();
+    public synchronized boolean addPost(Post post, String username) {
+        User user = searchUser(username);
+        if (user == null) {
+            return false;
         }
-        return posts.add(post);
+        user.getPosts().add(post);  // Add post to the user's own list
+
+        // Synchronize the post addition across friends who have this user as a friend
+        for (User u : users) {
+            for (Friend f : u.getFriends()) {
+                if (f.getUsername().equalsIgnoreCase(username)) {
+                    f.getPosts().add(post);  // Friend class must handle post lists similarly to User
+                }
+            }
+        }
+        return true;
     }
+
+
 
     public ArrayList<Post> getPosts() {
         return posts;
@@ -168,9 +181,11 @@ public class UserDatabase implements Serializable {
     public synchronized ArrayList<Post> getFriendPosts(User user) {
         ArrayList<Post> friendPosts = new ArrayList<>();
         for (Friend friend : user.getFriends()) {
-            User friendUser = searchUser(friend.getUsername());
-            if (friendUser != null && !friend.isBlock()) {
-                friendPosts.addAll(friendUser.getPosts()); // Assuming User has a getPosts method
+            if (!friend.isBlock()) {
+                User friendUser = searchUser(friend.getUsername());
+                if (friendUser != null) {
+                    friendPosts.addAll(friendUser.getPosts());
+                }
             }
         }
         return friendPosts;
