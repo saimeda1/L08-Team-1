@@ -63,7 +63,7 @@ public class ClientHandler extends Thread {
                 case "searchuser" :
                     handleSearchUser();
                     break;
-                case "friendrequest" :
+                case "friendrequest":
                     handleFriendRequest();
                     break;
                 case "deletecomment" :
@@ -174,13 +174,20 @@ public class ClientHandler extends Thread {
         out.flush();
     }
     private void handleFriendRequest() throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();  // Reading the username
-        String friendUsername = (String) in.readObject();
-        boolean isBlock = in.readBoolean();
+        String username = (String) in.readObject();  // Reading the username of the requesting user
+        String friendUsername = (String) in.readObject();  // Reading the username of the friend to add
+        boolean isBlock = in.readBoolean();  // Reading the block status
+
         boolean result = userDatabase.manageFriendRequest(username, friendUsername, isBlock);
         out.writeBoolean(result);
+        if (result) {
+            out.writeObject("Friend request processed successfully.");
+        } else {
+            out.writeObject("Failed to process friend request.");
+        }
         out.flush();
     }
+
 
 
     private void handleDeleteComment() throws IOException, ClassNotFoundException {

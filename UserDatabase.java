@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
@@ -124,32 +123,37 @@ public class UserDatabase implements Serializable {
         }
         return null;
     }
-    public synchronized boolean manageFriendRequest(String requestingUsername, String targetUsername, boolean isBlock) {
+    public synchronized boolean manageFriendRequest(String requestingUsername, String targetUsername, boolean b) {
         User requestingUser = searchUser(requestingUsername);
         User targetUser = searchUser(targetUsername);
 
-        if (requestingUser == null || targetUser == null) return false;
+        if (requestingUser == null || targetUser == null) {
+            System.out.println("Either the requesting user or the target user does not exist.");
+            return false; // Return false if either user does not exist.
+        }
 
-        // Check if the target user is already a friend (or blocked friend)
+        // Prevent a user from adding themselves as a friend
+        if (requestingUsername.equals(targetUsername)) {
+            System.out.println("A user cannot add themselves as a friend.");
+            return false;
+        }
+
+        // Check if the target user is already a friend
         for (Friend friend : requestingUser.getFriends()) {
             if (friend.getUsername().equals(targetUsername)) {
-                if (isBlock) {
-                    friend.setBlock(true);  // Block the user
-                } else {
-                    friend.setBlock(false); // Unblock/Add the user
-                }
-                return false;
+                System.out.println("These users are already friends.");
+                return false; // They are already friends, no action needed
             }
         }
 
-        // If not already friends or blocked, and not a block request, add as new friend
-        //if (!isBlock) {
-            Friend newFriend = new Friend(targetUsername, targetUser.getPassword(), false);
-            requestingUser.getFriends().add(newFriend);
-            return true;
-        //}
-        //return false;
+        // Add new friend if not already friends
+        Friend newFriend = new Friend(targetUsername, targetUser.getPassword(), false); // Assume block status is initially false
+        requestingUser.getFriends().add(newFriend);
+        System.out.println("Friend added successfully: " + targetUsername);
+        return true;
     }
+
+
 
     public synchronized boolean deletePost(int postId) {
         return posts.removeIf(post -> post.getId() == postId);

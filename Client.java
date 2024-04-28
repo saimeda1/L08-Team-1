@@ -55,6 +55,11 @@ public class Client {
     }
 
     private void processCommand(String command) throws IOException, ClassNotFoundException {
+        if (!loggedIn && !("login".equalsIgnoreCase(command) || "register".equalsIgnoreCase(command) || "exit".equalsIgnoreCase(command))) {
+            System.out.println("Please login or register to continue.");
+            return;
+        }
+
         switch (command.toLowerCase()) {
             case "login":
                 handleLogin();
@@ -66,18 +71,34 @@ public class Client {
                 handleLogout();
                 break;
             case "addpost":
-                if (loggedIn) handleAddPost();
-                else System.out.println("Please login to add a post.");
+                handleAddPost();
                 break;
             case "addcomment":
-                if (loggedIn) handleAddComment();
-                else System.out.println("Please login to add a comment.");
+                handleAddComment();
                 break;
+            case "searchuser":
+                handleSearchUser();
+                break;
+            case "friendrequest":
+                System.out.println("Enter 'true' to block, 'false' to friend:");
+                boolean isBlock = Boolean.parseBoolean(scanner.nextLine());
+                handleFriendRequest(isBlock);
+                break;
+            case "deletecomment":
+                handleDeleteComment();
+                break;
+            case "deletepost":
+                handleDeletePost();
+                break;
+            case "exit":
+                System.out.println("Exiting application.");
+                return; // Exit the application
             default:
                 System.out.println("Invalid command.");
                 break;
         }
     }
+
 
     private void handleLogin() throws IOException {
         System.out.println("Enter username:");
@@ -181,19 +202,19 @@ public class Client {
         readResponse();
     }
 
-    private void readResponse() throws IOException {
+    private void readResponse() {
         try {
             boolean result = in.readBoolean();
-            if (result) {
-                System.out.println("Action completed successfully.");
-            } else {
-                System.out.println("Action failed.");
-            }
+            String response = (String) in.readObject();
+            System.out.println(result ? "Action completed successfully." : "Action failed: " + response);
         } catch (IOException e) {
-            System.err.println("Error while reading response: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("IOException while reading the response: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.err.println("ClassNotFoundException while reading the response: " + e.getMessage());
         }
     }
+
+
     private void handleSearchUser() throws IOException, ClassNotFoundException {
         System.out.println("Enter username to search:");
         String username = scanner.nextLine();
@@ -212,12 +233,22 @@ public class Client {
     private void handleFriendRequest(boolean isBlock) throws IOException {
         System.out.println("Enter friend's username:");
         String friendUsername = scanner.nextLine();
-        out.writeObject("friendrequest");
-        out.writeObject(friendUsername);
-        out.writeBoolean(isBlock);
-        out.flush();
-        readResponse();
+        try {
+            out.writeObject("friendrequest");
+            out.writeObject(currentUser.getUsername());  // Send the current user's username
+            out.writeObject(friendUsername);  // Send the friend's username
+            out.writeBoolean(isBlock);  // Send the block status
+            out.flush();
+
+            // Handle response
+            boolean result = in.readBoolean();
+            String response = (String) in.readObject();
+            System.out.println(result ? "Friend request successful: " + response : "Friend request failed: " + response);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error during sending friend request: " + e.getMessage());
+        }
     }
+
 
     private void handleDeleteComment() throws IOException {
         System.out.println("Enter comment ID:");

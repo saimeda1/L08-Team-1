@@ -6,7 +6,6 @@ import java.io.Serializable;
  * This is for group project phrase 1
  */
 public class Friend extends User implements IFriend, Serializable {
-    private static final long serialVersionUID = 1L;
     private boolean block;
     ArrayList<Post> friendPost = new ArrayList<>();
 
