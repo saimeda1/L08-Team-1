@@ -27,7 +27,7 @@ public class Server {
 
     protected UserDatabase loadOrCreateDatabase() {
         try {
-            File file = new File(DATA_FILE);
+            File file = new File("server_data.dat");
             if (file.exists() && !file.isDirectory()) {
                 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                     return (UserDatabase) ois.readObject();
