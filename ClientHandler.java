@@ -75,6 +75,9 @@ public class ClientHandler extends Thread {
                 case "fetchFriendPosts" :
                     handleFetchFriendPosts();
                     break;
+                case "fetchfriendposts":
+                    handleFetchFriendPosts();
+                    break;
                 default:
                     out.writeBoolean(false);
                     out.writeObject("Unknown command.");
@@ -113,21 +116,29 @@ public class ClientHandler extends Thread {
             } else {
                 User user = new User(username, password);
                 boolean isRegistered = userDatabase.signUp(user);
-                out.writeBoolean(isRegistered);
                 if (isRegistered) {
+                    saveData();  // Save the user database after registering a new user
+                    out.writeBoolean(true);
                     out.writeObject("Registration successful.");
                 } else {
+                    out.writeBoolean(false);
                     out.writeObject("Registration failed: Error during registration.");
                 }
             }
         } catch (ClassNotFoundException e) {
             out.writeBoolean(false);
             out.writeObject("Error processing request: Class not found.");
-        } catch (IOException e) {
-            out.writeBoolean(false);
-            out.writeObject("Error processing request: IO Exception.");
         } finally {
             out.flush();
+        }
+    }
+
+    public void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("server_data.dat"))) {
+            oos.writeObject(userDatabase);
+            System.out.println("Data saved successfully.");
+        } catch (IOException e) {
+            System.err.println("Error saving user data: " + e.getMessage());
         }
     }
 
@@ -136,13 +147,17 @@ public class ClientHandler extends Thread {
         Comment comment = (Comment) in.readObject();
         int postId = (int) in.readObject();
         boolean result = userDatabase.addCommentToPost(comment, postId);
+        if (result) {
+            saveData();  // Save the user database after adding a new comment
+        }
         out.writeBoolean(result);
         out.flush();
     }
 
     private void handleAddPost() throws IOException, ClassNotFoundException {
-        Post post = (Post) in.readObject();  // Directly read the post object
+        Post post = (Post) in.readObject();
         if (post != null && userDatabase.addPost(post)) {
+            saveData();  // Save the user database after adding a new post
             out.writeBoolean(true);
         } else {
             out.writeBoolean(false);
@@ -150,7 +165,6 @@ public class ClientHandler extends Thread {
         }
         out.flush();
     }
-
 
     private void closeResources() {
         try {
@@ -188,30 +202,30 @@ public class ClientHandler extends Thread {
         out.flush();
     }
 
-
-
     private void handleDeleteComment() throws IOException, ClassNotFoundException {
-        int commentId = (int) in.readObject(); // Reading the comment ID directly
+        int commentId = (int) in.readObject();
         boolean result = userDatabase.deleteComment(commentId);
+        if (result) {
+            saveData();  // Save the user database after deleting a comment
+        }
         out.writeBoolean(result);
         out.flush();
     }
 
     private void handleDeletePost() throws IOException, ClassNotFoundException {
-        int postId = (int) in.readObject(); // Reading the post ID directly
+        int postId = (int) in.readObject();
         boolean result = userDatabase.deletePost(postId);
+        if (result) {
+            saveData();  // Save the user database after deleting a post
+        }
         out.writeBoolean(result);
         out.flush();
     }
     private void handleFetchFriendPosts() throws IOException {
         try {
-            // Read the username sent by the client after the fetchFriendPosts command
-            String username = (String) in.readObject();
-
-            // Search for the user in the database
+            String username = (String) in.readObject();  // Reading the username of the requesting user
             User currentUser = userDatabase.searchUser(username);
 
-            // Ensure that the user exists and is logged in
             if (currentUser == null) {
                 out.writeBoolean(false);
                 out.writeObject("User not found or not logged in.");
@@ -219,14 +233,13 @@ public class ClientHandler extends Thread {
                 return;
             }
 
-            // Fetch friend posts from the database
             ArrayList<Post> friendPosts = userDatabase.getFriendPosts(currentUser);
             if (friendPosts.isEmpty()) {
                 out.writeBoolean(false);
                 out.writeObject("No posts found from friends.");
             } else {
                 out.writeBoolean(true);
-                out.writeObject(friendPosts.toArray(new Post[0])); // Serialize as an array of posts
+                out.writeObject(friendPosts.toArray(new Post[0]));  // Serialize as an array of posts
             }
         } catch (ClassNotFoundException e) {
             out.writeBoolean(false);
@@ -234,6 +247,7 @@ public class ClientHandler extends Thread {
         }
         out.flush();
     }
+
 
 
 }

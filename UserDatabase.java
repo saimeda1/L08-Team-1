@@ -96,9 +96,9 @@ public class UserDatabase implements Serializable {
     }
 
     public synchronized User searchUser(String search) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(search)) {
-                return users.get(i);
+        for (User user : users) {
+            if (user.getUsername().equalsIgnoreCase(search.trim())) {
+                return user;
             }
         }
         return null;
@@ -152,8 +152,6 @@ public class UserDatabase implements Serializable {
         System.out.println("Friend added successfully: " + targetUsername);
         return true;
     }
-
-
 
     public synchronized boolean deletePost(int postId) {
         return posts.removeIf(post -> post.getId() == postId);

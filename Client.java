@@ -90,6 +90,9 @@ public class Client {
             case "deletepost":
                 handleDeletePost();
                 break;
+            case "fetchfriendposts":
+                handleFetchFriendPosts();
+                break;
             case "exit":
                 System.out.println("Exiting application.");
                 return; // Exit the application
@@ -248,6 +251,30 @@ public class Client {
             System.err.println("Error during sending friend request: " + e.getMessage());
         }
     }
+
+
+    private void handleFetchFriendPosts() throws IOException {
+        out.writeObject("fetchFriendPosts");
+        out.writeObject(currentUser.getUsername());  // Send the username to fetch friends' posts
+        out.flush();
+
+        try {
+            boolean success = in.readBoolean();
+            if (!success) {
+                String message = (String) in.readObject();
+                System.out.println("Failed to fetch friends' posts: " + message);
+            } else {
+                Post[] posts = (Post[]) in.readObject();
+                System.out.println("Friends' Posts:");
+                for (Post post : posts) {
+                    System.out.println("Content: " + post.getContent());
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("Error while reading the response: " + e.getMessage());
+        }
+    }
+
 
 
     private void handleDeleteComment() throws IOException {
