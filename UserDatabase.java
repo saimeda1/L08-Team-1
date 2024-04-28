@@ -142,10 +142,9 @@ public class UserDatabase implements Serializable {
 
         if (requestingUser == null || targetUser == null) {
             System.out.println("Either the requesting user or the target user does not exist.");
-            return false; // Return false if either user does not exist.
+            return false;  // Return false if either user does not exist.
         }
 
-        // Prevent a user from adding themselves as a friend
         if (requestingUsername.equals(targetUsername)) {
             System.out.println("A user cannot add themselves as a friend.");
             return false;
@@ -155,7 +154,7 @@ public class UserDatabase implements Serializable {
         for (Friend friend : requestingUser.getFriends()) {
             if (friend.getUsername().equals(targetUsername)) {
                 System.out.println("These users are already friends.");
-                return false; // They are already friends, no action needed
+                return false;  // They are already friends, no action needed
             }
         }
 
@@ -165,6 +164,7 @@ public class UserDatabase implements Serializable {
         System.out.println("Friend added successfully: " + targetUsername);
         return true;
     }
+
 
     public synchronized boolean deletePost(int postId) {
         return posts.removeIf(post -> post.getId() == postId);

@@ -136,7 +136,7 @@ public class ClientHandler extends Thread {
     public void saveData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("server_data.dat"))) {
             oos.writeObject(userDatabase);
-            System.out.println("Data saved successfully.");
+            System.out.println("Data saved successfully after processing a friend request.");
         } catch (IOException e) {
             System.err.println("Error saving user data: " + e.getMessage());
         }
@@ -192,9 +192,9 @@ public class ClientHandler extends Thread {
         out.flush();
     }
     private void handleFriendRequest() throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();  // Reading the username of the requesting user
-        String friendUsername = (String) in.readObject();  // Reading the username of the friend to add
-        boolean isBlock = in.readBoolean();  // Reading the block status
+        String username = (String) in.readObject();
+        String friendUsername = (String) in.readObject();
+        boolean isBlock = in.readBoolean();
 
         boolean result = userDatabase.manageFriendRequest(username, friendUsername, isBlock);
         out.writeBoolean(result);
@@ -252,7 +252,6 @@ public class ClientHandler extends Thread {
         }
         out.flush();
     }
-
 
 
 }
