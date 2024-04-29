@@ -1,5 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
+
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.*;
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
@@ -60,7 +63,7 @@ public class CommentTestCases {
                 "Comment: " + comment.getId() + "\n" +
                 "This is a test comment.\n" +
                 "by username\n" +
-                "at " + "\n" +
+                "at " + comment.getTime() + "\n" +
                 "likes: 0\n" +
                 "dislikes: 0\n";
         assertEquals("toString output does not match expected output", expected, comment.toString());
