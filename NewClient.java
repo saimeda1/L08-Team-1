@@ -173,9 +173,12 @@ public class NewClient {
                 StringBuilder postsDisplay = new StringBuilder("Friends' Posts:\n");
                 for (Post post : friendPosts) {
                     postsDisplay.append("ID: ").append(post.getId()).append("\n").append(post.getContent()).append("\n")
+                            .append("By: ").append(post.getAuthor().getUsername()).append("\n")
                             .append("Likes: ").append(post.getLikes()).append("\n")
-                            .append("Dislikes: ").append(post.getDislikes()).append("\n").
-                            append(post.getComments().toString());
+                            .append("Dislikes: ").append(post.getDislikes()).append("\n");
+                    for (Comment comment : post.getComments()) {
+                        postsDisplay.append(comment.toString());
+                    }
                 }
                 gui.displayMessage(postsDisplay.toString());
             } else {
