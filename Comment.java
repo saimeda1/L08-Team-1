@@ -58,6 +58,10 @@ public class Comment implements ICommentable, Serializable {
         return content;
     }
 
+    public LocalDateTime getTime() {
+        return time;
+    }
+
     public void setContent(String content) {
         this.content = content;
     }
