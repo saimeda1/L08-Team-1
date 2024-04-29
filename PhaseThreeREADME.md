@@ -1,19 +1,18 @@
 # Phase 3 README
 
 ## Running Instructions
-Open a terminal or command prompt, navigate to the project folder, and compile the Java files. The general command to compile all Java files in the directory is:
+1. Open a terminal or command prompt and navigate to the project folder. 
+2. Compile the Javafiles using your preferred Java compielr. The general command to compile all the java files in the directory is:
 
 javac *.java
 
-This will compile all java files in the directory, resolving dependencies among them, and generate class files for each.
+3. Start the server by running the `Server` class. You can do this by using the Java command followed by the name of the server class: 
 
-Running Test Cases: To run the test cases, you would use the Java command followed by the name of the test case class (without the .java extension). For example, to run ServerTestCases, you would use:
+java Server
 
-java ServerTestCases
+4. Once the server is running, you can activate the GUI by running the NewClient class (not the Client class). This will launch the client-side GUI:
 
-You can start the main method in the Server to set up the server and run the main method in the client to connect to the server. We have implemented serialization so when you connect to the server as a client you will communicate with the server so the server will store all the data. To manually test the code you will can open the terminal after connecting to the server and login,register,addposts, or addcomments. All of these functions are thread safe and will not store data locally.
-
-A main method will be implemented alongside a GUI in future phases for easier usability.
+java NewClient
 
 ## Project Overview
 This phase of the Social Media Platform project focuses on client GUI implementation. There should be combined functionality of the minimum requirements within the GUI. There was more focus on adding features to the network application of the program as well. 
