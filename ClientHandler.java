@@ -72,11 +72,22 @@ public class ClientHandler extends Thread {
                 case "deletepost" :
                     handleDeletePost();
                     break;
-                case "fetchFriendPosts" :
-                    handleFetchFriendPosts();
-                    break;
                 case "fetchfriendposts":
                     handleFetchFriendPosts();
+                    break;
+                case "logout":
+                    break;
+                case "upvotepost":
+                    handleUpvotePost();
+                    break;
+                case "downvotepost":
+                    handleDownvotePost();
+                    break;
+                case "upvotecomment":
+                    handleUpvoteComment();
+                    break;
+                case "downvotecomment":
+                    handleDownvoteComment();
                     break;
                 default:
                     out.writeBoolean(false);
@@ -250,6 +261,37 @@ public class ClientHandler extends Thread {
             out.writeBoolean(false);
             out.writeObject("Error processing request: " + e.getMessage());
         }
+        out.flush();
+    }
+    private void handleUpvotePost() throws IOException, ClassNotFoundException {
+        int postId = in.readInt();
+        boolean result = userDatabase.upVotePost(postId);
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Post upvoted successfully." : "Failed to upvote post.");
+        out.flush();
+    }
+
+    private void handleDownvotePost() throws IOException, ClassNotFoundException {
+        int postId = in.readInt();
+        boolean result = userDatabase.downVotePost(postId);
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Post downvoted successfully." : "Failed to downvote post.");
+        out.flush();
+    }
+
+    private void handleUpvoteComment() throws IOException, ClassNotFoundException {
+        int commentId = in.readInt();
+        boolean result = userDatabase.upVoteComment(commentId);
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Comment upvoted successfully." : "Failed to upvote comment.");
+        out.flush();
+    }
+
+    private void handleDownvoteComment() throws IOException, ClassNotFoundException {
+        int commentId = in.readInt();
+        boolean result = userDatabase.downVoteComment(commentId);
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Comment downvoted successfully." : "Failed to downvote comment.");
         out.flush();
     }
 
