@@ -50,7 +50,7 @@ java NewClient
 
 ## Contributions
 
-- **Sai Meda**: Led the project development, designed interfaces, and created test cases. meda@purdue.edu
+- **Sai Meda**: Led the project development, designed interfaces, developed server and client interacions, and created test cases. meda@purdue.edu
 - **Bianca Olea**: Focused on documentation, developed the User class, and ensured adherence to project specifications. bolea@purdue.edu
 - **Chenjun Zhou**: Developed methods, contributed to the application control flow, and assisted in GUI design. zhou1486@purdue.edu
 - **Xinan Qin**: Developed database functionalities and contributed significantly to server-side testing. qin206@purdue.edu
