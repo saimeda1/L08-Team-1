@@ -63,7 +63,7 @@ public class PostTestCases {
     public void testToString() {
         String expectedOutputWithoutComments = "PostID: " + post.getId() + "\n" +
                 "Post: This is a test post\n" + "by authorName\n" + "at " +
-                post.getTime() + "\n" + "likes: 0\n" + "dislikes: 0\n";
+                post.getTime() + "\n" + "likes: 0\n" + "dislikes: 0";
         assertEquals("toString output does not match expected output", expectedOutputWithoutComments, post.toString().trim());
     }
 
@@ -71,8 +71,7 @@ public class PostTestCases {
     public void testHidePost() {
         post.setHide(true);
         assertTrue("Post should be marked as hidden", post.isHide());
-        assertEquals("toString should reflect hidden status", "This post has been hidden\n", post.toString().trim());
+        assertEquals("toString should reflect hidden status", "This post has been hidden", post.toString().trim());
     }
 
 }
-
