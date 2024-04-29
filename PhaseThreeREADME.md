@@ -107,3 +107,8 @@ The `ClientGUI` class manages the user interface for client-side operations. It 
 - To interact with posts, use the `upVotePost(Post post)` and `downVotePost(Post post)` methods to upvote or downvote posts.
 - To hide or unhide posts from the feed, use the `hidePost(int postId)` and `unhidePost(int postId)` methods.
 - To interact with comments, use the `upVoteComment(Comment comment)` and `downVoteComment(Comment comment)` methods to upvote or downvote comments.
+
+# Who Submitted What
+- Bianca Olea worked on adding features to the Network and documentation for the various files, READMe, the project report and presentation slides.
+- Chenjun Zhou and Xinan Qin designed GUI for the platform.
+- Sai Meda worked on adding features to the Network, testing, and the presentation slides.

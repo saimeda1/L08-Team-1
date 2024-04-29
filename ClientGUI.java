@@ -5,6 +5,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
+/**
+
+@author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
+@version Apr.15
+The ClientGUI class represents the graphical user interface for the client application.
+It provides functionality for user authentication, posting content, commenting on posts,
+logging out, and various other interactions with the server.
+This is for phase 3.
+**/
+
 public class ClientGUI extends JFrame {
     private NewClient client; // Reference to the Client class
     private JTextField usernameField, postIDField, friendUsernameField, searchUserField;
