@@ -93,6 +93,12 @@ public class Client {
             case "fetchfriendposts":
                 handleFetchFriendPosts();
                 break;
+            case "upvotecomment":
+                System.out.println("Enter the comment id");
+                int id = scanner.nextInt();
+                scanner.nextLine();
+                handleUpvoteComment(id);
+                break;
             case "exit":
                 System.out.println("Exiting application.");
                 return; // Exit the application
@@ -162,18 +168,22 @@ public class Client {
         }
         System.out.println("Enter the post content:");
         String content = scanner.nextLine();
-        Post post = new Post(content, currentUser, false);  // Post creation remains the same
+        Post post = new Post(content, currentUser, false);
 
-        out.writeObject("addpost");
-        out.writeObject(currentUser.getUsername());  // Send username
-        out.writeObject(post);  // Send the post object
-        out.flush();
+        try {
+            out.writeObject("addpost");
+            out.writeObject(post);
+            out.flush();
 
-        boolean result = in.readBoolean();  // Reading the response from the server
-        if (result) {
-            System.out.println("Post added successfully.");
-        } else {
-            System.out.println("Failed to add post.");
+            boolean result = in.readBoolean();  // Reading the response from the server
+            if (result) {
+                System.out.println("Post added successfully.");
+            } else {
+                System.out.println("Failed to add post.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error during add post: " + e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -204,12 +214,10 @@ public class Client {
     private void readResponse() {
         try {
             boolean result = in.readBoolean();
-            String response = (String) in.readObject();
-            System.out.println(result ? "Action completed successfully." : "Action failed: " + response);
+            //String response = (String) in.readObject();
+            System.out.println(result ? "Action completed successfully." : "Action failed: " );
         } catch (IOException e) {
             System.err.println("IOException while reading the response: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.err.println("ClassNotFoundException while reading the response: " + e.getMessage());
         }
     }
 
@@ -264,6 +272,9 @@ public class Client {
                 System.out.println("Friends' Posts:");
                 for (Post post : posts) {
                     System.out.println("Content: " + post.getContent());
+                    for (Comment comment : post.getComments()) {
+                        System.out.println(comment.toString());
+                    }
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -311,6 +322,20 @@ public class Client {
             if (scanner != null) scanner.close();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
+        }
+    }
+    public void handleUpvoteComment(int commentId) {
+
+        try {
+            out.writeObject("upvoteComment");
+            out.writeInt(commentId);
+            out.flush();
+
+            boolean success = in.readBoolean();
+            //String message = (String) in.readObject();
+            System.out.println(success ? "Comment upvoted successfully." : "Failed to upvote comment: ");
+        } catch (IOException  e) {
+            System.out.println("Error upvoting comment: " + e.getMessage());
         }
     }
 
