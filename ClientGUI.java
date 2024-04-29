@@ -1,191 +1,168 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class ClientGUI extends JFrame {
-    private NewClient client;
-    private JTextField usernameField, passwordField, postField;
-    private JTextArea messageArea;
-    private CardLayout cardLayout;
-    private JPanel cards;
-    private DefaultListModel<String> postListModel;
+    private NewClient client; // Reference to the Client class
+    private JTextField usernameField, postIDField, friendUsernameField, searchUserField;
+    private JPasswordField passwordField;
+    private JTextArea postArea, commentArea, outputArea;
+    private JButton loginButton, registerButton, postButton, commentButton, logoutButton, fetchFriendPostsButton, friendRequestButton, searchUserButton;
+    private JButton upvotePostButton, downvotePostButton, upvoteCommentButton, downvoteCommentButton;
+    private JCheckBox isBlockCheckBox;
 
     public ClientGUI(NewClient client) {
         this.client = client;
-        initializeLookAndFeel();
-        createGUI();
+        this.client.setGUI(this);
+        initializeUI();
     }
 
-    private void initializeLookAndFeel() {
+    private void initializeUI() {
+        setTitle("Client Application");
+        setSize(1200, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // User interaction panel
+        JPanel northPanel = new JPanel();
+        usernameField = new JTextField(10);
+        passwordField = new JPasswordField(10);
+        loginButton = new JButton("Login");
+        registerButton = new JButton("Register");
+        logoutButton = new JButton("Logout");
+        searchUserField = new JTextField(10);
+        searchUserButton = new JButton("Search User");
+        northPanel.add(new JLabel("Username:"));
+        northPanel.add(usernameField);
+        northPanel.add(new JLabel("Password:"));
+        northPanel.add(passwordField);
+        northPanel.add(loginButton);
+        northPanel.add(registerButton);
+        northPanel.add(logoutButton);
+        northPanel.add(new JLabel("Search User:"));
+        northPanel.add(searchUserField);
+        northPanel.add(searchUserButton);
+
+        // Content interaction panel
+        JPanel centerPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+        postArea = new JTextArea(5, 20);
+        postArea.setBorder(BorderFactory.createTitledBorder("Post Content"));
+        commentArea = new JTextArea(3, 20);
+        commentArea.setBorder(BorderFactory.createTitledBorder("Add Comment"));
+        postButton = new JButton("Add Post");
+        commentButton = new JButton("Add Comment");
+        postIDField = new JTextField(5);
+        postIDField.setBorder(BorderFactory.createTitledBorder("Post/Comment ID"));
+        friendUsernameField = new JTextField(10);
+        friendUsernameField.setBorder(BorderFactory.createTitledBorder("Friend's Username"));
+        isBlockCheckBox = new JCheckBox("Block");
+        fetchFriendPostsButton = new JButton("Fetch Friends' Posts");
+        friendRequestButton = new JButton("Send Friend Request");
+        upvotePostButton = new JButton("Upvote Post");
+        downvotePostButton = new JButton("Downvote Post");
+        upvoteCommentButton = new JButton("Upvote Comment");
+        downvoteCommentButton = new JButton("Downvote Comment");
+
+        centerPanel.add(new JScrollPane(postArea));
+        centerPanel.add(postButton);
+        centerPanel.add(new JScrollPane(commentArea));
+        centerPanel.add(commentButton);
+        centerPanel.add(postIDField);
+        centerPanel.add(friendUsernameField);
+        centerPanel.add(isBlockCheckBox);
+        centerPanel.add(fetchFriendPostsButton);
+        centerPanel.add(friendRequestButton);
+        centerPanel.add(upvotePostButton);
+        centerPanel.add(downvotePostButton);
+        centerPanel.add(upvoteCommentButton);
+        centerPanel.add(downvoteCommentButton);
+
+        // Output area
+        outputArea = new JTextArea(15, 50);
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Output Log"));
+
+        add(northPanel, BorderLayout.NORTH);
+        add(centerPanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.SOUTH);
+
+        setupActions();
+    }
+
+    private void setupActions() {
+        loginButton.addActionListener(e -> client.handleLogin(usernameField.getText(), new String(passwordField.getPassword())));
+        registerButton.addActionListener(e -> client.handleRegister(usernameField.getText(), new String(passwordField.getPassword())));
+        postButton.addActionListener(e -> client.handleAddPost(postArea.getText()));
+        commentButton.addActionListener(e -> {
+            String postIdInput = postIDField.getText();
+            if (isValidInteger(postIdInput)) {
+                int postId = Integer.parseInt(postIdInput);  // Safe to parse now
+                client.handleAddComment(commentArea.getText(), postId);
+            } else {
+                outputArea.append("Invalid post ID.\n");
+            }
+        });
+
+        logoutButton.addActionListener(e -> client.handleLogout());
+        friendRequestButton.addActionListener(e -> {
+            client.handleFriendRequest(friendUsernameField.getText(), isBlockCheckBox.isSelected());
+        });
+        fetchFriendPostsButton.addActionListener(e -> {
+            client.handleFetchFriendPosts();
+        });
+        searchUserButton.addActionListener(e -> {
+            client.handleSearchUser(searchUserField.getText());
+        });
+        upvotePostButton.addActionListener(e -> {
+            try {
+                int postId = Integer.parseInt(postIDField.getText());
+                client.handleUpvotePost(postId);
+            } catch (NumberFormatException ex) {
+                outputArea.append("Invalid post ID for upvoting.\n");
+            }
+        });
+        downvotePostButton.addActionListener(e -> {
+            try {
+                int postId = Integer.parseInt(postIDField.getText());
+                client.handleDownvotePost(postId);
+            } catch (NumberFormatException ex) {
+                outputArea.append("Invalid post ID for downvoting.\n");
+            }
+        });
+        upvoteCommentButton.addActionListener(e -> {
+            try {
+                int commentId = Integer.parseInt(postIDField.getText());
+                client.handleUpvoteComment(commentId);
+            } catch (NumberFormatException ex) {
+                outputArea.append("Invalid comment ID for upvoting.\n");
+            }
+        });
+        downvoteCommentButton.addActionListener(e -> {
+            try {
+                int commentId = Integer.parseInt(postIDField.getText());
+                client.handleDownvoteComment(commentId);
+            } catch (NumberFormatException ex) {
+                outputArea.append("Invalid comment ID for downvoting.\n");
+            }
+        });
+    }
+    private boolean isValidInteger(String input) {
+        if (input == null) {
+            return false;
+        }
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            System.err.println("Unable to set Look and Feel");
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
-    private void createGUI() {
-        setTitle("Client Application");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        cardLayout = new CardLayout();
-        cards = new JPanel(cardLayout);
-
-        JPanel loginPanel = createLoginPanel();
-        JPanel postPanel = createPostPanel();
-        JPanel friendPostsPanel = createFriendPostsPanel();
-
-        cards.add(loginPanel, "Login");
-        cards.add(postPanel, "Post");
-        cards.add(friendPostsPanel, "FriendPosts");
-
-        getContentPane().add(cards, BorderLayout.CENTER);
-
-        messageArea = new JTextArea(10, 40);
-        messageArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(messageArea);
-        getContentPane().add(scrollPane, BorderLayout.SOUTH);
-
-        pack();
-        setVisible(true);
-    }
-
-    private JPanel createLoginPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 200, 20, 200));
-
-        usernameField = new JTextField(10);
-        passwordField = new JPasswordField(10);
-        JButton loginButton = new JButton("Login");
-        JButton registerButton = new JButton("Register");
-
-        loginButton.addActionListener(e -> client.handleLogin(usernameField.getText(), passwordField.getText()));
-        registerButton.addActionListener(e -> client.handleRegister(usernameField.getText(), passwordField.getText()));
-
-        panel.add(new JLabel("Username:"));
-        panel.add(usernameField);
-        panel.add(new JLabel("Password:"));
-        panel.add(passwordField);
-        panel.add(loginButton);
-        panel.add(registerButton);
-
-        return panel;
-    }
-
-    private JPanel createPostPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        postField = new JTextField(20);
-        JTextField commentField = new JTextField(20);
-        JTextField postIdField = new JTextField(5);
-        JTextField usernameSearchField = new JTextField(20);
-        JTextField friendUsernameField = new JTextField(20);
-        JTextField deleteCommentIdField = new JTextField(5);
-        JTextField deletePostIdField = new JTextField(5);
-
-        JButton addPostButton = new JButton("Add Post");
-        JButton addCommentButton = new JButton("Add Comment");
-        JButton searchUserButton = new JButton("Search User");
-        JButton sendFriendRequestButton = new JButton("Send Friend Request");
-        JButton deleteCommentButton = new JButton("Delete Comment");
-        JButton deletePostButton = new JButton("Delete Post");
-        JButton viewFriendPostsButton = new JButton("View Friend's Posts");
-
-        addPostButton.addActionListener(e -> client.handleAddPost(postField.getText()));
-        addCommentButton.addActionListener(e -> {
-            try {
-                int postId = Integer.parseInt(postIdField.getText());
-                client.handleAddComment(commentField.getText(), postId);
-            } catch (NumberFormatException ex) {
-                displayMessage("Invalid post ID.");
-            }
-        });
-        searchUserButton.addActionListener(e -> client.handleSearchUser(usernameSearchField.getText()));
-        sendFriendRequestButton.addActionListener(e -> client.handleFriendRequest(friendUsernameField.getText(), false));
-        deleteCommentButton.addActionListener(e -> {
-            try {
-                int commentId = Integer.parseInt(deleteCommentIdField.getText());
-                client.handleDeleteComment(commentId);
-            } catch (NumberFormatException ex) {
-                displayMessage("Invalid comment ID.");
-            }
-        });
-        deletePostButton.addActionListener(e -> {
-            try {
-                int postId = Integer.parseInt(deletePostIdField.getText());
-                client.handleDeletePost(postId);
-            } catch (NumberFormatException ex) {
-                displayMessage("Invalid post ID.");
-            }
-        });
-        viewFriendPostsButton.addActionListener(e -> switchToFriendPostsView());
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(0, 2, 10, 10));
-
-        inputPanel.add(new JLabel("Post:"));
-        inputPanel.add(postField);
-        inputPanel.add(addPostButton);
-        inputPanel.add(new JLabel("Add Comment to Post ID:"));
-        inputPanel.add(postIdField);
-        inputPanel.add(commentField);
-        inputPanel.add(addCommentButton);
-        inputPanel.add(new JLabel("Search User:"));
-        inputPanel.add(usernameSearchField);
-        inputPanel.add(searchUserButton);
-        inputPanel.add(new JLabel("Friend Username:"));
-        inputPanel.add(friendUsernameField);
-        inputPanel.add(sendFriendRequestButton);
-        inputPanel.add(new JLabel("Delete Comment ID:"));
-        inputPanel.add(deleteCommentIdField);
-        inputPanel.add(deleteCommentButton);
-        inputPanel.add(new JLabel("Delete Post ID:"));
-        inputPanel.add(deletePostIdField);
-        inputPanel.add(deletePostButton);
-        inputPanel.add(viewFriendPostsButton);
-
-        panel.add(inputPanel, BorderLayout.NORTH);
-
-        return panel;
-    }
-
-    private JPanel createFriendPostsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        postListModel = new DefaultListModel<>();
-        JList<String> postList = new JList<>(postListModel);
-        JButton refreshPostsButton = new JButton("Refresh Posts");
-        refreshPostsButton.addActionListener(e -> client.fetchFriendPosts());
-
-        JScrollPane scrollPane = new JScrollPane(postList);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(refreshPostsButton, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    public void displayFriendPosts(String[] posts) {
-        SwingUtilities.invokeLater(() -> {
-            postListModel.clear();
-            for (String post : posts) {
-                postListModel.addElement(post);
-            }
-        });
-    }
-
     public void displayMessage(String message) {
-        SwingUtilities.invokeLater(() -> messageArea.append(message + "\n"));
-    }
-
-    public void switchToLoginView() {
-        cardLayout.show(cards, "Login");
-    }
-
-    public void switchToPostView() {
-        cardLayout.show(cards, "Post");
-    }
-
-    private void switchToFriendPostsView() {
-        cardLayout.show(cards, "FriendPosts");
-        client.fetchFriendPosts();  // Fetch posts when switching to the view
+        SwingUtilities.invokeLater(() -> outputArea.append(message + "\n"));
     }
 }
