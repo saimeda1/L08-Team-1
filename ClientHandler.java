@@ -248,8 +248,8 @@ public class ClientHandler extends Thread {
                 out.flush();
                 return;
             }
-
             ArrayList<Post> friendPosts = userDatabase.getFriendPosts(currentUser);
+            saveData();
             if (friendPosts.isEmpty()) {
                 out.writeBoolean(false);
                 out.writeObject("No posts found from friends.");
@@ -266,6 +266,7 @@ public class ClientHandler extends Thread {
     private void handleUpvotePost() throws IOException, ClassNotFoundException {
         int postId = in.readInt();
         boolean result = userDatabase.upVotePost(postId);
+        saveData();
         out.writeBoolean(result);
         //out.writeObject(result ? "Post upvoted successfully." : "Failed to upvote post.");
         out.flush();
@@ -274,6 +275,7 @@ public class ClientHandler extends Thread {
     private void handleDownvotePost() throws IOException, ClassNotFoundException {
         int postId = in.readInt();
         boolean result = userDatabase.downVotePost(postId);
+        saveData();
         out.writeBoolean(result);
         //out.writeObject(result ? "Post downvoted successfully." : "Failed to downvote post.");
         out.flush();
@@ -282,6 +284,7 @@ public class ClientHandler extends Thread {
     private void handleUpvoteComment() throws IOException, ClassNotFoundException {
         int commentId = in.readInt();
         boolean result = userDatabase.upVoteComment(commentId);
+        saveData();
         out.writeBoolean(result);
         //out.writeObject(result ? "Comment upvoted successfully." : "Failed to upvote comment.");
         out.flush();
@@ -290,6 +293,7 @@ public class ClientHandler extends Thread {
     private void handleDownvoteComment() throws IOException, ClassNotFoundException {
         int commentId = in.readInt();
         boolean result = userDatabase.downVoteComment(commentId);
+        saveData();
         out.writeBoolean(result);
         //out.writeObject(result ? "Comment downvoted successfully." : "Failed to downvote comment.");
         out.flush();
