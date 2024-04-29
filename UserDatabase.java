@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.io.Serializable;
 
@@ -189,6 +190,49 @@ public class UserDatabase implements Serializable {
             }
         }
         return friendPosts;
+    }
+    public synchronized boolean upVotePost(int postId) {
+        for (Post p : posts) {
+            if (p.getId() == postId) {
+                p.upVote(); 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean downVotePost(int postId) {
+        for (Post p : posts) {
+            if (p.getId() == postId) {
+                p.downVote(); 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean upVoteComment(int commentId) {
+        for (Post post : posts) {
+            for (Comment c : post.getComments()) {
+                if (c.getId() == commentId) {
+                    c.upVote(); 
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean downVoteComment(int commentId) {
+        for (Post post : posts) {
+            for (Comment c : post.getComments()) {
+                if (c.getId() == commentId) {
+                    c.downVote(); 
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
