@@ -1,6 +1,8 @@
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.Random;
+
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
@@ -20,7 +22,8 @@ public class Post implements IPost, Serializable {
 
 
     public Post(String content, User author, boolean hide) {
-        this.id = nextId++;
+        Random random = new Random();
+        this.id = random.nextInt(10000000);
         this.content = content;
         this.time = LocalDateTime.now();
         this.likes = 0;

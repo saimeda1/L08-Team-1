@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.io.Serializable;
 
@@ -54,12 +55,25 @@ public class UserDatabase implements Serializable {
         return check;
     }
 
-    public synchronized boolean addPost(Post post) {
-        if (posts == null) {
-            posts = new ArrayList<>();
+    public synchronized boolean addPost(Post post, String username) {
+        User user = searchUser(username);
+        if (user == null) {
+            return false;
         }
-        return posts.add(post);
+        user.getPosts().add(post);  // Add post to the user's own list
+
+        // Synchronize the post addition across friends who have this user as a friend
+        for (User u : users) {
+            for (Friend f : u.getFriends()) {
+                if (f.getUsername().equalsIgnoreCase(username)) {
+                    f.getPosts().add(post);  // Friend class must handle post lists similarly to User
+                }
+            }
+        }
+        return true;
     }
+
+
 
     public ArrayList<Post> getPosts() {
         return posts;
@@ -129,10 +143,9 @@ public class UserDatabase implements Serializable {
 
         if (requestingUser == null || targetUser == null) {
             System.out.println("Either the requesting user or the target user does not exist.");
-            return false; // Return false if either user does not exist.
+            return false;  // Return false if either user does not exist.
         }
 
-        // Prevent a user from adding themselves as a friend
         if (requestingUsername.equals(targetUsername)) {
             System.out.println("A user cannot add themselves as a friend.");
             return false;
@@ -142,7 +155,7 @@ public class UserDatabase implements Serializable {
         for (Friend friend : requestingUser.getFriends()) {
             if (friend.getUsername().equals(targetUsername)) {
                 System.out.println("These users are already friends.");
-                return false; // They are already friends, no action needed
+                return false;  // They are already friends, no action needed
             }
         }
 
@@ -152,6 +165,7 @@ public class UserDatabase implements Serializable {
         System.out.println("Friend added successfully: " + targetUsername);
         return true;
     }
+
 
     public synchronized boolean deletePost(int postId) {
         return posts.removeIf(post -> post.getId() == postId);
@@ -168,12 +182,57 @@ public class UserDatabase implements Serializable {
     public synchronized ArrayList<Post> getFriendPosts(User user) {
         ArrayList<Post> friendPosts = new ArrayList<>();
         for (Friend friend : user.getFriends()) {
-            User friendUser = searchUser(friend.getUsername());
-            if (friendUser != null && !friend.isBlock()) {
-                friendPosts.addAll(friendUser.getPosts()); // Assuming User has a getPosts method
+            if (!friend.isBlock()) {
+                User friendUser = searchUser(friend.getUsername());
+                if (friendUser != null) {
+                    friendPosts.addAll(friendUser.getPosts());
+                }
             }
         }
         return friendPosts;
+    }
+    public synchronized boolean upVotePost(int postId) {
+        for (Post p : posts) {
+            if (p.getId() == postId) {
+                p.upVote(); 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean downVotePost(int postId) {
+        for (Post p : posts) {
+            if (p.getId() == postId) {
+                p.downVote(); 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean upVoteComment(int commentId) {
+        for (Post post : posts) {
+            for (Comment c : post.getComments()) {
+                if (c.getId() == commentId) {
+                    c.upVote(); 
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean downVoteComment(int commentId) {
+        for (Post post : posts) {
+            for (Comment c : post.getComments()) {
+                if (c.getId() == commentId) {
+                    c.downVote(); 
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

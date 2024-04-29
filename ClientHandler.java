@@ -72,11 +72,22 @@ public class ClientHandler extends Thread {
                 case "deletepost" :
                     handleDeletePost();
                     break;
-                case "fetchFriendPosts" :
-                    handleFetchFriendPosts();
-                    break;
                 case "fetchfriendposts":
                     handleFetchFriendPosts();
+                    break;
+                case "logout":
+                    break;
+                case "upvotepost":
+                    handleUpvotePost();
+                    break;
+                case "downvotepost":
+                    handleDownvotePost();
+                    break;
+                case "upvotecomment":
+                    handleUpvoteComment();
+                    break;
+                case "downvotecomment":
+                    handleDownvoteComment();
                     break;
                 default:
                     out.writeBoolean(false);
@@ -136,7 +147,7 @@ public class ClientHandler extends Thread {
     public void saveData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("server_data.dat"))) {
             oos.writeObject(userDatabase);
-            System.out.println("Data saved successfully.");
+            System.out.println("Data saved successfully after processing a friend request.");
         } catch (IOException e) {
             System.err.println("Error saving user data: " + e.getMessage());
         }
@@ -155,16 +166,20 @@ public class ClientHandler extends Thread {
     }
 
     private void handleAddPost() throws IOException, ClassNotFoundException {
-        Post post = (Post) in.readObject();
-        if (post != null && userDatabase.addPost(post)) {
+        String username = (String) in.readObject();  // Read the username
+        Post post = (Post) in.readObject();  // Directly read the post object
+
+        if (post != null && userDatabase.addPost(post, username)) {  // Now also pass the username
             saveData();  // Save the user database after adding a new post
             out.writeBoolean(true);
+            out.writeObject("Post added successfully.");
         } else {
             out.writeBoolean(false);
-            System.out.println("Failed to add post: post object is null or addPost failed");
+            out.writeObject("Failed to add post: post object is null or addPost failed");
         }
         out.flush();
     }
+
 
     private void closeResources() {
         try {
@@ -188,14 +203,15 @@ public class ClientHandler extends Thread {
         out.flush();
     }
     private void handleFriendRequest() throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();  // Reading the username of the requesting user
-        String friendUsername = (String) in.readObject();  // Reading the username of the friend to add
-        boolean isBlock = in.readBoolean();  // Reading the block status
+        String username = (String) in.readObject();
+        String friendUsername = (String) in.readObject();
+        boolean isBlock = in.readBoolean();
 
         boolean result = userDatabase.manageFriendRequest(username, friendUsername, isBlock);
         out.writeBoolean(result);
         if (result) {
             out.writeObject("Friend request processed successfully.");
+            saveData();  // Save the user database after processing a friend request
         } else {
             out.writeObject("Failed to process friend request.");
         }
@@ -232,8 +248,8 @@ public class ClientHandler extends Thread {
                 out.flush();
                 return;
             }
-
             ArrayList<Post> friendPosts = userDatabase.getFriendPosts(currentUser);
+            saveData();
             if (friendPosts.isEmpty()) {
                 out.writeBoolean(false);
                 out.writeObject("No posts found from friends.");
@@ -247,7 +263,41 @@ public class ClientHandler extends Thread {
         }
         out.flush();
     }
+    private void handleUpvotePost() throws IOException, ClassNotFoundException {
+        int postId = in.readInt();
+        boolean result = userDatabase.upVotePost(postId);
+        saveData();
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Post upvoted successfully." : "Failed to upvote post.");
+        out.flush();
+    }
 
+    private void handleDownvotePost() throws IOException, ClassNotFoundException {
+        int postId = in.readInt();
+        boolean result = userDatabase.downVotePost(postId);
+        saveData();
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Post downvoted successfully." : "Failed to downvote post.");
+        out.flush();
+    }
+
+    private void handleUpvoteComment() throws IOException, ClassNotFoundException {
+        int commentId = in.readInt();
+        boolean result = userDatabase.upVoteComment(commentId);
+        saveData();
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Comment upvoted successfully." : "Failed to upvote comment.");
+        out.flush();
+    }
+
+    private void handleDownvoteComment() throws IOException, ClassNotFoundException {
+        int commentId = in.readInt();
+        boolean result = userDatabase.downVoteComment(commentId);
+        saveData();
+        out.writeBoolean(result);
+        //out.writeObject(result ? "Comment downvoted successfully." : "Failed to downvote comment.");
+        out.flush();
+    }
 
 
 }

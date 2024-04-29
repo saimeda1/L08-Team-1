@@ -93,6 +93,12 @@ public class Client {
             case "fetchfriendposts":
                 handleFetchFriendPosts();
                 break;
+            case "upvotecomment":
+                System.out.println("Enter the comment id");
+                int id = scanner.nextInt();
+                scanner.nextLine();
+                handleUpvoteComment(id);
+                break;
             case "exit":
                 System.out.println("Exiting application.");
                 return; // Exit the application
@@ -208,12 +214,10 @@ public class Client {
     private void readResponse() {
         try {
             boolean result = in.readBoolean();
-            String response = (String) in.readObject();
-            System.out.println(result ? "Action completed successfully." : "Action failed: " + response);
+            //String response = (String) in.readObject();
+            System.out.println(result ? "Action completed successfully." : "Action failed: " );
         } catch (IOException e) {
             System.err.println("IOException while reading the response: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.err.println("ClassNotFoundException while reading the response: " + e.getMessage());
         }
     }
 
@@ -268,6 +272,9 @@ public class Client {
                 System.out.println("Friends' Posts:");
                 for (Post post : posts) {
                     System.out.println("Content: " + post.getContent());
+                    for (Comment comment : post.getComments()) {
+                        System.out.println(comment.toString());
+                    }
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -315,6 +322,20 @@ public class Client {
             if (scanner != null) scanner.close();
         } catch (IOException e) {
             System.err.println("Error closing resources: " + e.getMessage());
+        }
+    }
+    public void handleUpvoteComment(int commentId) {
+
+        try {
+            out.writeObject("upvoteComment");
+            out.writeInt(commentId);
+            out.flush();
+
+            boolean success = in.readBoolean();
+            //String message = (String) in.readObject();
+            System.out.println(success ? "Comment upvoted successfully." : "Failed to upvote comment: ");
+        } catch (IOException  e) {
+            System.out.println("Error upvoting comment: " + e.getMessage());
         }
     }
 
