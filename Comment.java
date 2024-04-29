@@ -1,5 +1,7 @@
+import java.io.*;
 import java.time.LocalDateTime;
-import java.io.Serializable;
+import java.util.Random;
+
 /**
  * @author Chenjun Zhou, Xinan Qin, Sai Meda, Bianca Olea
  * @version Apr.1
@@ -37,7 +39,9 @@ public class Comment implements ICommentable, Serializable {
 
     public void upVote() {
         likes++;
+        //System.out.println("Yes");
     }
+
     public void downVote() {
         dislikes++;
     }
@@ -45,6 +49,7 @@ public class Comment implements ICommentable, Serializable {
     public User getAuthor() {
         return author;
     }
+
     public void setAuthor(User author) {
         this.author = author;
     }
@@ -63,7 +68,8 @@ public class Comment implements ICommentable, Serializable {
         this.time = LocalDateTime.now();
         this.likes = 0;
         this.dislikes = 0;
-        this.id = nextId++;
+        Random random = new Random();
+        this.id = random.nextInt(10000000);
     }
 
     public String toString() {
